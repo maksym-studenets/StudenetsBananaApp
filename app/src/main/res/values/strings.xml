@@ -4,4 +4,6 @@
     <string name="action_settings">Settings</string>
     <string name="logout_prompt">Log out</string>
     <string name="about_prompt">About</string>
+    <string name="dialog_positive_button">Save</string>
+    <string name="dialog_negative_button">Cancel</string>
 </resources>

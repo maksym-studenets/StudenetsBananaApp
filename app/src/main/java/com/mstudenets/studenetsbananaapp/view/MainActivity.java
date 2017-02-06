@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 Toast.makeText(this, "Successfully logged out", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.activity_main_menu_about:
+                Toast.makeText(this, "Addition pending", Toast.LENGTH_SHORT).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
@@ -55,16 +58,5 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-
-        /*
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        if (!sharedPreferences.contains("username") || !sharedPreferences.contains("password")) {
-            startActivity(intent);
-            //Snackbar.make()
-        } else {
-            boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
-            if (!isLoggedIn)
-                startActivity(intent);
-        }*/
     }
 }
