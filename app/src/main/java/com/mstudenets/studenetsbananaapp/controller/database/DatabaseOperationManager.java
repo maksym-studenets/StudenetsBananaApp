@@ -2,6 +2,7 @@ package com.mstudenets.studenetsbananaapp.controller.database;
 
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -61,17 +62,19 @@ public class DatabaseOperationManager
         }
     }
 
+    public boolean addRowOptimized(Fruit fruit) {
+        try {
+            fruitDao.create(fruit);
+            Toast.makeText(context, "Successfully added row to DB", Toast.LENGTH_SHORT).show();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public void deleteRow(int id) {
         try {
-            /*
-            DatabaseHelper databaseHelper = OpenHelperManager.
-                    getHelper(context, DatabaseHelper.class);
-            Dao<Fruit, Integer> dao = databaseHelper.getFruitDao();
-            DeleteBuilder<Fruit, Integer> deleteBuilder = dao.deleteBuilder();
-            deleteBuilder.where().eq("id", id);
-            deleteBuilder.delete();
-            fruits = selectFromDatabase();
-            */
             Dao<Fruit, Integer> dao = fruitDao;
             DeleteBuilder<Fruit, Integer> deleteBuilder = dao.deleteBuilder();
             deleteBuilder.where().eq("id", id);
@@ -80,6 +83,20 @@ public class DatabaseOperationManager
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteRowOptimized(int id) {
+        try {
+            Dao<Fruit, Integer> dao = fruitDao;
+            DeleteBuilder<Fruit, Integer> deleteBuilder = dao.deleteBuilder();
+            deleteBuilder.where().eq("id", id);
+            deleteBuilder.delete();
+            Toast.makeText(context, "Successfully deleted row from DB", Toast.LENGTH_SHORT).show();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -93,6 +110,39 @@ public class DatabaseOperationManager
             updateBuilder.update();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean updateRowOptimized(Fruit fruit) {
+        try {
+            UpdateBuilder<Fruit, Integer> updateBuilder = fruitDao.updateBuilder();
+            int id = fruit.getId();
+            updateBuilder.where().eq("id", id);
+
+            updateBuilder.updateColumnValue("name", fruit.getName());
+            updateBuilder.updateColumnValue("country", fruit.getCountry());
+            updateBuilder.updateColumnValue("price", fruit.getPrice());
+            updateBuilder.update();
+
+
+            /*
+            UpdateBuilder<Fruit, Integer> updateBuilder = fruitIntegerDao.updateBuilder();
+            updateBuilder.where().eq("id", id);
+            updateBuilder.updateColumnValue("name", fruit.getName());
+            updateBuilder.updateColumnValue("country", fruit.getCountry());
+            updateBuilder.updateColumnValue("price", fruit.getPrice());
+            updateBuilder.update();
+            */
+
+
+            /*
+
+            */
+            Toast.makeText(context, "Successfully updated row", Toast.LENGTH_SHORT).show();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

@@ -11,7 +11,6 @@ public class DatabaseManager
     private DatabaseHelper databaseHelper;
 
     private DatabaseManager() {
-
     }
 
     public static DatabaseManager getInstance() {

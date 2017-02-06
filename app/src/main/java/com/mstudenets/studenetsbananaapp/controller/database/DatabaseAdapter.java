@@ -70,12 +70,27 @@ public class DatabaseAdapter extends RecyclerView.Adapter<DatabaseAdapter.FruitV
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                removeItem(viewHolder.getAdapterPosition());
+                removeRow(viewHolder.getAdapterPosition());
             }
         };
     }
 
+    public void addItem(Fruit fruit) {
+        fruits.add(fruit);
+        notifyItemInserted(fruits.size());
+    }
+
     public void removeItem(int position) {
+        fruits.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void updateItem(int position, Fruit fruit) {
+        fruits.set(position, fruit);
+        notifyDataSetChanged();
+    }
+
+    private void removeRow(int position) {
         fruits.remove(position);
         this.notifyItemRemoved(position);
         operationManager.deleteRow(position);
