@@ -98,21 +98,17 @@ public class MainFragment extends Fragment
                 int position = viewHolder.getAdapterPosition();
 
                 if (direction == ItemTouchHelper.LEFT) {
-                    //adapter.removeItem(position);
                     int id = fruits.get(position).getId();
-                    //operationManager.deleteRow(id);
-                    //initializeRecyclerView();
                     boolean isSuccessful = operationManager.deleteRowOptimized(id);
                     if (isSuccessful)
                         adapter.removeItem(position);
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     removeView();
-                    //editPosition = position + 1;
+                    editPosition = position;
                     alertDialog.setTitle("Edit fruit");
                     nameEdit.setText(fruits.get(position).getName());
                     countryEdit.setText(fruits.get(position).getCountry());
                     priceEdit.setText(String.valueOf(fruits.get(position).getPrice()));
-
                     alertDialog.show();
                 }
             }
@@ -147,10 +143,6 @@ public class MainFragment extends Fragment
                                 adapter.addItem(fruit);
                                 dialog.dismiss();
                             }
-                            //operationManager.addRow(fruit);
-                            //fruits = operationManager.selectFromDatabase();
-                            //initializeRecyclerView();
-
                             nameEdit.setText("");
                             countryEdit.setText("");
                             priceEdit.setText("");
@@ -159,18 +151,14 @@ public class MainFragment extends Fragment
                             Fruit fruit = new Fruit(id, name, country, price);
                             boolean isSuccessful = operationManager.updateRowOptimized(fruit);
                             if (isSuccessful) {
-                                adapter.updateItem(editPosition, fruit);
-                                //fruits.set(editPosition, fruit);
-                                //adapter.notifyDataSetChanged();
+                                fruits.set(editPosition, fruit);
+                                adapter.notifyDataSetChanged();
                                 dialog.dismiss();
                             }
+
                             nameEdit.setText("");
                             countryEdit.setText("");
                             priceEdit.setText("");
-                            //operationManager.updateRow(editPosition, fruit);
-                            //fruits = operationManager.selectFromDatabase();
-                            //initializeRecyclerView();
-
                         }
                     }
                 });

@@ -1,6 +1,7 @@
 package com.mstudenets.studenetsbananaapp.controller.database;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ public class DatabaseAdapter extends RecyclerView.Adapter<DatabaseAdapter.FruitV
     private ArrayList<Fruit> fruits;
     private Context context;
     private DatabaseOperationManager operationManager = new DatabaseOperationManager(context);
+    private AlertDialog.Builder dialog;
 
     public class FruitViewHolder extends RecyclerView.ViewHolder
     {
@@ -83,16 +85,13 @@ public class DatabaseAdapter extends RecyclerView.Adapter<DatabaseAdapter.FruitV
     public void removeItem(int position) {
         fruits.remove(position);
         notifyItemRemoved(position);
-    }
-
-    public void updateItem(int position, Fruit fruit) {
-        fruits.set(position, fruit);
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, fruits.size());
     }
 
     private void removeRow(int position) {
         fruits.remove(position);
         this.notifyItemRemoved(position);
         operationManager.deleteRow(position);
+        this.notifyItemRangeChanged(0, fruits.size());
     }
 }

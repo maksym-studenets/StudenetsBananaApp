@@ -115,29 +115,13 @@ public class DatabaseOperationManager
 
     public boolean updateRowOptimized(Fruit fruit) {
         try {
-            UpdateBuilder<Fruit, Integer> updateBuilder = fruitDao.updateBuilder();
             int id = fruit.getId();
-            updateBuilder.where().eq("id", id);
-
-            updateBuilder.updateColumnValue("name", fruit.getName());
-            updateBuilder.updateColumnValue("country", fruit.getCountry());
-            updateBuilder.updateColumnValue("price", fruit.getPrice());
-            updateBuilder.update();
-
-
-            /*
-            UpdateBuilder<Fruit, Integer> updateBuilder = fruitIntegerDao.updateBuilder();
+            UpdateBuilder<Fruit, Integer> updateBuilder = fruitDao.updateBuilder();
             updateBuilder.where().eq("id", id);
             updateBuilder.updateColumnValue("name", fruit.getName());
             updateBuilder.updateColumnValue("country", fruit.getCountry());
             updateBuilder.updateColumnValue("price", fruit.getPrice());
             updateBuilder.update();
-            */
-
-
-            /*
-
-            */
             Toast.makeText(context, "Successfully updated row", Toast.LENGTH_SHORT).show();
             return true;
         } catch (SQLException e) {
