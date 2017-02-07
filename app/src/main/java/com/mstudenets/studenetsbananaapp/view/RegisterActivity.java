@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity
                     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Fill in all the fields",
+                    Toast.makeText(RegisterActivity.this, R.string.toast_not_all_fields,
                             Toast.LENGTH_LONG).show();
                 }
             }
