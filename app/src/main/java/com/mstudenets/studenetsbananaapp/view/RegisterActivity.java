@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.Registration;
+import com.mstudenets.studenetsbananaapp.controller.user.Registration;
 import com.mstudenets.studenetsbananaapp.model.User;
 
 public class RegisterActivity extends AppCompatActivity
