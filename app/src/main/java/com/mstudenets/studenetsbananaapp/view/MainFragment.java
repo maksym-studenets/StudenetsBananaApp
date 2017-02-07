@@ -98,18 +98,17 @@ public class MainFragment extends Fragment
                 int position = viewHolder.getAdapterPosition();
 
                 if (direction == ItemTouchHelper.LEFT) {
-                    //adapter.removeItem(position);
                     int id = fruits.get(position).getId();
-                    operationManager.deleteRow(id);
-                    //initializeRecyclerView();
+                    boolean isSuccessful = operationManager.deleteRowOptimized(id);
+                    if (isSuccessful)
+                        adapter.removeItem(position);
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     removeView();
-                    editPosition = position + 1;
+                    editPosition = position;
                     alertDialog.setTitle("Edit fruit");
                     nameEdit.setText(fruits.get(position).getName());
                     countryEdit.setText(fruits.get(position).getCountry());
                     priceEdit.setText(String.valueOf(fruits.get(position).getPrice()));
-
                     alertDialog.show();
                 }
             }
@@ -139,18 +138,27 @@ public class MainFragment extends Fragment
                         if (add) {
                             add = false;
                             Fruit fruit = new Fruit(name, country, price);
-                            operationManager.addRow(fruit);
-                            fruits = operationManager.selectFromDatabase();
-                            initializeRecyclerView();
-
+                            boolean isSuccessful = operationManager.addRowOptimized(fruit);
+                            if (isSuccessful) {
+                                adapter.addItem(fruit);
+                                dialog.dismiss();
+                            }
                             nameEdit.setText("");
                             countryEdit.setText("");
                             priceEdit.setText("");
                         } else {
-                            Fruit fruit = new Fruit(name, country, price);
-                            operationManager.updateRow(editPosition, fruit);
-                            fruits = operationManager.selectFromDatabase();
-                            initializeRecyclerView();
+                            int id = fruits.get(editPosition).getId();
+                            Fruit fruit = new Fruit(id, name, country, price);
+                            boolean isSuccessful = operationManager.updateRowOptimized(fruit);
+                            if (isSuccessful) {
+                                fruits.set(editPosition, fruit);
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+
+                            nameEdit.setText("");
+                            countryEdit.setText("");
+                            priceEdit.setText("");
                         }
                     }
                 });
