@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.j256.ormlite.dao.Dao;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.controller.database.DatabaseAdapter;
 import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 
 public class MainFragment extends Fragment
 {
-    private Dao<Fruit, Integer> fruitDao;
     private ArrayList<Fruit> fruits;
     private DatabaseOperationManager operationManager;
     private DatabaseAdapter adapter;
@@ -46,9 +44,8 @@ public class MainFragment extends Fragment
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fragment_main_fab);
         fruitView = (RecyclerView) view.findViewById(R.id.fragment_main_recyclerview);
-        //final DatabaseHelper databaseHelper = new DatabaseHelper(getContext());
         operationManager = new DatabaseOperationManager(getContext());
-        fruitDao = operationManager.getFruitDao();
+        operationManager.getFruitDao();
         fruits = operationManager.selectFromDatabase();
 
         fab.setOnClickListener(new View.OnClickListener()
@@ -57,7 +54,7 @@ public class MainFragment extends Fragment
             public void onClick(View v) {
                 add = true;
                 removeView();
-                alertDialog.setTitle("Add fruit");
+                alertDialog.setTitle(R.string.dialog_add_title);
                 alertDialog.show();
             }
         });
@@ -105,7 +102,7 @@ public class MainFragment extends Fragment
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     removeView();
                     editPosition = position;
-                    alertDialog.setTitle("Edit fruit");
+                    alertDialog.setTitle(R.string.dialog_edit_title);
                     nameEdit.setText(fruits.get(position).getName());
                     countryEdit.setText(fruits.get(position).getCountry());
                     priceEdit.setText(String.valueOf(fruits.get(position).getPrice()));

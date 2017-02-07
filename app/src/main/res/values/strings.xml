@@ -1,9 +1,23 @@
 <resources>
     <string name="app_name">Banana App</string>
-    <string name="title_activity_main">Welcome</string>
-    <string name="action_settings">Settings</string>
-    <string name="logout_prompt">Log out</string>
-    <string name="about_prompt">About</string>
-    <string name="dialog_positive_button">Save</string>
-    <string name="dialog_negative_button">Cancel</string>
+    <string name="title_activity_main">Ласкаво просимо</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="logout_prompt">Вийти</string>
+    <string name="about_prompt">Про програму</string>
+    <string name="dialog_positive_button">Зберегти</string>
+    <string name="dialog_negative_button">Скасувати</string>
+    <string name="dialog_name_text">Назва</string>
+    <string name="dialog_country_text">Країна</string>
+    <string name="dialog_price_text">Ціна</string>
+    <string name="activity_main_logout_successful">Ви успішно вийшли</string>
+    <string name="activity_login_username">Ім’я</string>
+    <string name="activity_login_password">Пароль</string>
+    <string name="activity_login_noaccount_message">Не маєте запису?</string>
+    <string name="activity_login_button_register">Зареєструватися</string>
+    <string name="activity_login_login_prompt">Увійти</string>
+    <string name="activity_register_login_prompt">Реєстрація</string>
+
+    <string name="toast_not_all_fields">Заповніть усі поля</string>
+    <string name="dialog_add_title">Додавання</string>
+    <string name="dialog_edit_title">Редагування</string>
 </resources>

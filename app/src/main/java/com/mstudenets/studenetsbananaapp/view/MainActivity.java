@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
                 sharedPreferences.putBoolean("isLoggedIn", false);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
-                Toast.makeText(this, "Successfully logged out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.activity_main_logout_successful, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.activity_main_menu_about:
                 Toast.makeText(this, "Addition pending", Toast.LENGTH_SHORT).show();
