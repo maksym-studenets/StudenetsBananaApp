@@ -1,4 +1,4 @@
-package com.mstudenets.studenetsbananaapp.view;
+package com.mstudenets.studenetsbananaapp.view.fragments;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -15,14 +15,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.database.DatabaseAdapter;
-import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
+import com.mstudenets.studenetsbananaapp.controller.fruits.DatabaseAdapter;
+import com.mstudenets.studenetsbananaapp.controller.fruits.DatabaseOperationManager;
 import com.mstudenets.studenetsbananaapp.model.Fruit;
 
 import java.util.ArrayList;
 
 
-public class MainFragment extends Fragment
+public class FruitDatabaseFragment extends Fragment
 {
     private ArrayList<Fruit> fruits;
     private DatabaseOperationManager operationManager;
@@ -34,7 +34,7 @@ public class MainFragment extends Fragment
     private boolean add = false;
     private int editPosition;
 
-    public MainFragment() {
+    public FruitDatabaseFragment() {
     }
 
     @Override

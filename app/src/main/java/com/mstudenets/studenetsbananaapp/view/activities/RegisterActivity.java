@@ -1,4 +1,4 @@
-package com.mstudenets.studenetsbananaapp.view;
+package com.mstudenets.studenetsbananaapp.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
