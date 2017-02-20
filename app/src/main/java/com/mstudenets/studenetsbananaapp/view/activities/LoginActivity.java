@@ -2,6 +2,8 @@ package com.mstudenets.studenetsbananaapp.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +33,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 SecurePreferences sharedPreferences = new SecurePreferences(getApplicationContext(),
-                        "ACCOUNT", SECURE_KEY, true);
+                        "ACCOUNT", SECURE_KEY);
                 String mUsername = null;
                 String mPassword = null;
 
@@ -39,11 +41,11 @@ public class LoginActivity extends AppCompatActivity
                 String password = passwordEdit.getText().toString();
 
                 if (sharedPreferences.containsKey("username"))
-                    mUsername = sharedPreferences.getString("username", "");
+                    mUsername = sharedPreferences.getString("username");
                 if (sharedPreferences.containsKey("password"))
-                    mPassword = sharedPreferences.getString("password", "");
+                    mPassword = sharedPreferences.getString("password");
                 if (sharedPreferences.containsKey("isloggedin")) {
-                    if (sharedPreferences.getBoolean("isloggedin", false)) {
+                    if (sharedPreferences.getBoolean("isloggedin")) {
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
@@ -52,16 +54,25 @@ public class LoginActivity extends AppCompatActivity
                 if (mUsername != null && mPassword != null &&
                         !mUsername.equals("") && !mPassword.equals("")) {
                     if (mUsername.equals(username) && mPassword.equals(password)) {
-                        sharedPreferences.putBoolean("isLoggedIn", true);
+                        sharedPreferences.putBoolean(true);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         Toast.makeText(LoginActivity.this, "Successfully logged in",
                                 Toast.LENGTH_SHORT).show();
+                    } else {
+                        /*Toast.makeText(LoginActivity.this, "Username or password do not match",
+                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Authentication failed",
+                                Toast.LENGTH_SHORT).show();
+                                */
+                        ConstraintLayout constraintLayout = (ConstraintLayout)
+                                findViewById(R.id.activity_login_root_layout);
+                        Snackbar.make(constraintLayout,
+                                "Username or password does not match. Authentication failed",
+                                Snackbar.LENGTH_INDEFINITE).show();
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Username or password do not match",
-                            Toast.LENGTH_LONG).show();
-                    Toast.makeText(LoginActivity.this, "Authentication failed",
+                    Toast.makeText(LoginActivity.this, "Fill in all the fields",
                             Toast.LENGTH_SHORT).show();
                 }
             }

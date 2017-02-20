@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.mstudenets.studenetsbananaapp">
 
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_main"
@@ -9,16 +13,19 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/Banana">
-        <activity android:name=".view.MainActivity">
+
+        <activity
+            android:name=".view.activities.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Banana">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.LoginActivity"/>
-        <activity android:name=".view.RegisterActivity">
-        </activity>
+        <activity android:name=".view.activities.LoginActivity"/>
+        <activity android:name=".view.activities.RegisterActivity"/>
+
     </application>
 
 </manifest>

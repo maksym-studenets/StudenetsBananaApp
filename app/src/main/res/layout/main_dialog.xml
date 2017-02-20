@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,7 +28,8 @@
         android:ems="10"
         android:inputType="textCapSentences|textPersonName"
         app:layout_constraintLeft_toRightOf="@+id/main_dialog_text_name"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="LabelFor"/>
 
     <TextView
         android:id="@+id/main_dialog_text_country"
@@ -51,7 +53,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/main_dialog_text_country"
         app:layout_constraintLeft_toLeftOf="@+id/main_dialog_edit_name"
         app:layout_constraintTop_toTopOf="@+id/main_dialog_text_country"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="LabelFor"/>
 
     <TextView
         android:id="@+id/main_dialog_text_price"
@@ -73,5 +76,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/main_dialog_text_price"
         app:layout_constraintTop_toTopOf="@+id/main_dialog_text_price"
         app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="@+id/main_dialog_edit_country"/>
+        app:layout_constraintLeft_toLeftOf="@+id/main_dialog_edit_country"
+        tools:ignore="LabelFor"/>
 </android.support.constraint.ConstraintLayout>

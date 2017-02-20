@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Banana App</string>
-    <string name="title_activity_main">Ласкаво просимо</string>
-    <string name="action_settings">Налаштування</string>
+    <string name="title_activity_main_no_navbar">Ласкаво просимо</string>
+    <string name="action_settings_no_navbar">Налаштування</string>
     <string name="logout_prompt">Вийти</string>
     <string name="about_prompt">Про програму</string>
     <string name="dialog_positive_button">Зберегти</string>
@@ -20,4 +20,23 @@
     <string name="toast_not_all_fields">Заповніть усі поля</string>
     <string name="dialog_add_title">Додавання</string>
     <string name="dialog_edit_title">Редагування</string>
+    <string name="drawer_image_description">Опис фону</string>
+    <string name="title_activity_nav">NavActivity</string>
+
+    <string name="navigation_drawer_contacts">Контакти</string>
+    <string name="navigation_drawer_weather">Погода</string>
+    <string name="navigation_drawer_logout">Вийти</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Відкрити</string>
+    <string name="navigation_drawer_close">Закрити</string>
+
+    <string name="action_settings">Налаштування</string>
+    <string name="navbar_icon_description">Лого</string>
+
+    <string name="fragment_phone_contacts">Телефонна книга</string>
+    <string name="fragment_my_contacts">Мої контакти</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

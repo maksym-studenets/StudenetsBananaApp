@@ -9,18 +9,17 @@ import android.view.ViewGroup;
 
 import com.mstudenets.studenetsbananaapp.R;
 
-
-public class MyContactsFragment extends Fragment
+public class WeatherFragment extends Fragment
 {
-    public MyContactsFragment() {
+
+
+    public WeatherFragment() {
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_contacts, container, false);
+        return inflater.inflate(R.layout.fragment_weather, container, false);
     }
-
 }

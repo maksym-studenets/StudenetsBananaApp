@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.User;
-import com.mstudenets.studenetsbananaapp.view.LoginActivity;
+import com.mstudenets.studenetsbananaapp.view.activities.LoginActivity;
 
 /**
  * Registration class handles user registration process within the application.
@@ -27,10 +27,10 @@ public class Registration
      */
     public static void registerUser(User user, Context context) {
         SecurePreferences preferences = new SecurePreferences(context, LoginActivity.PREF_NAME,
-                LoginActivity.SECURE_KEY, true);
+                LoginActivity.SECURE_KEY);
         preferences.putString("username", user.getUsername());
         preferences.putString("password", user.getPassword());
-        preferences.putBoolean("isLoggedIn", true);
+        preferences.putBoolean(true);
         preferences.commit();
 
     }

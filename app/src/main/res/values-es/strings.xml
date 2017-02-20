@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Banana App</string>
+    <string name="action_settings_no_navbar">Ajustes</string>
+    <string name="activity_login_button_register">Registrar</string>
+    <string name="activity_login_login_prompt">Iniciar sesión</string>
+    <string name="activity_login_noaccount_message">¿No tiene Vd. una cuenta?</string>
+    <string name="activity_login_password">Contraseña</string>
+    <string name="activity_login_username">Nombre</string>
+    <string name="activity_main_logout_successful">Exitosamente iniciando</string>
+    <string name="activity_register_login_prompt">Registración</string>
+    <string name="dialog_add_title">Adicción</string>
+    <string name="dialog_country_text">País</string>
+    <string name="dialog_edit_title">Editar</string>
+    <string name="dialog_name_text">Nombre</string>
+    <string name="dialog_negative_button">Cancelar</string>
+    <string name="dialog_positive_button">Guardar</string>
+    <string name="dialog_price_text">Precio</string>
+    <string name="logout_prompt">Desconectar</string>
+    <string name="title_activity_main_no_navbar">Bienvenido</string>
+    <string name="toast_not_all_fields">Llena todos campos</string>
+    <string name="about_prompt">Sobre aplicación</string>
+    <string name="navbar_icon_description">Logo</string>
+    <string name="drawer_image_description">Descripción del fondo</string>
+    <string name="hello_blank_fragment">Hola</string>
+    <string name="fragment_my_contacts">Mis contactos</string>
+    <string name="fragment_phone_contacts">Contactos de teléfono</string>
+    <string name="navigation_drawer_close">Cerrar</string>
+    <string name="navigation_drawer_contacts">Contactos</string>
+    <string name="navigation_drawer_logout">Desconectar</string>
+    <string name="navigation_drawer_open">Abrir</string>
+    <string name="navigation_drawer_weather">Tiempo</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="title_activity_nav">NavActivity</string>
+</resources>

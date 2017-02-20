@@ -2,13 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/activity_main_menu_logout"
+        android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="@string/logout_prompt"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/activity_main_menu_about"
-        android:orderInCategory="100"
-        android:title="@string/about_prompt"
+        android:title="@string/action_settings"
         app:showAsAction="never"/>
 </menu>

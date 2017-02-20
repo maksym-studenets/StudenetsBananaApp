@@ -21,7 +21,7 @@ public class MainActivityNoNavbar extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_no_navbar);
-        sharedPreferences = new SecurePreferences(this, PREF, LoginActivity.SECURE_KEY, true);
+        sharedPreferences = new SecurePreferences(this, PREF, LoginActivity.SECURE_KEY);
         checkUser();
 
         Toolbar appBar = (Toolbar) findViewById(R.id.activity_main_toolbar);
@@ -41,7 +41,7 @@ public class MainActivityNoNavbar extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.activity_main_menu_logout:
-                sharedPreferences.putBoolean("isLoggedIn", false);
+                sharedPreferences.putBoolean(false);
                 Intent intent = new Intent(MainActivityNoNavbar.this, LoginActivity.class);
                 startActivity(intent);
                 Toast.makeText(this, R.string.activity_main_logout_successful, Toast.LENGTH_SHORT).show();
@@ -55,7 +55,7 @@ public class MainActivityNoNavbar extends AppCompatActivity
     }
 
     private void checkUser() {
-        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn");
         if (!isLoggedIn) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
