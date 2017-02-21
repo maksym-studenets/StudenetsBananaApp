@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "440931154239",
+    "firebase_url": "https://studenetsbananaapp.firebaseio.com",
+    "project_id": "studenetsbananaapp",
+    "storage_bucket": "studenetsbananaapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440931154239:android:f67d2a439fa458e7",
+        "android_client_info": {
+          "package_name": "com.mstudenets.studenetsbananaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440931154239-dqacj5udfm1n6m25rmhvbe4te6h60h2t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mstudenets.studenetsbananaapp",
+            "certificate_hash": "c8de82f2dcdbe62fc2c97d3063d9564a436ed485"
+          }
+        },
+        {
+          "client_id": "440931154239-k2bulvc2rrtp6hk6l2jm4mg5bjs53msc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2W5fIw0egc3pLlI9jtdmkDp_ZXbIOMFM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440931154239-k2bulvc2rrtp6hk6l2jm4mg5bjs53msc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

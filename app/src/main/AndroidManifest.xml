@@ -17,14 +17,17 @@
         <activity
             android:name=".view.activities.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/Banana">
+            android:theme="@style/Banana"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.activities.LoginActivity"/>
-        <activity android:name=".view.activities.RegisterActivity"/>
+        <activity android:name=".view.activities.LoginActivity"
+                  android:configChanges="orientation|screenSize"/>
+        <activity android:name=".view.activities.RegisterActivity"
+                  android:configChanges="orientation|screenSize"/>
 
     </application>
 

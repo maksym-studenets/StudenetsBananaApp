@@ -2,10 +2,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contact_book_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mstudenets.studenetsbananaapp.view.fragments.ContactBookFragment"
-    android:background="@color/color_background_main">
+    android:background="@color/color_background_main"
+    tools:context="com.mstudenets.studenetsbananaapp.view.fragments.ContactBookFragment">
 
     <!--
     <ListView
@@ -30,9 +31,9 @@
         android:id="@+id/contact_book_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
