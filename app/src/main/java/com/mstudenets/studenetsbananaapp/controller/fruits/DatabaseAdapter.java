@@ -20,14 +20,14 @@ public class DatabaseAdapter extends RecyclerView.Adapter<DatabaseAdapter.FruitV
     private final DatabaseOperationManager operationManager;
     private AlertDialog.Builder dialog;
 
-    public class FruitViewHolder extends RecyclerView.ViewHolder
+    class FruitViewHolder extends RecyclerView.ViewHolder
     {
         final TextView idTextView;
         final TextView nameTextView;
         final TextView countryTextView;
         final TextView priceTextView;
 
-        public FruitViewHolder(View view) {
+        FruitViewHolder(View view) {
             super(view);
             idTextView = (TextView) view.findViewById(R.id.database_row_text_id);
             nameTextView = (TextView) view.findViewById(R.id.database_row_text_name);

@@ -1,6 +1,7 @@
 package com.mstudenets.studenetsbananaapp.controller.contacts;
 
 
-class DatabaseAdapter
+public class HelperFactory
+
 {
 }

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
+import com.mstudenets.studenetsbananaapp.view.fragments.MyContactsFragment;
 import com.mstudenets.studenetsbananaapp.view.fragments.WeatherFragment;
 
 public class MainActivity extends AppCompatActivity
