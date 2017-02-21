@@ -58,7 +58,7 @@ public class ContactsFragment extends Fragment
             }
         }
 
-        /*
+
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
@@ -74,7 +74,7 @@ public class ContactsFragment extends Fragment
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         }
-        */
+
     }
 
     @Override
