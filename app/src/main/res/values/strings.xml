@@ -22,12 +22,14 @@
     <string name="dialog_edit_title">Редагування</string>
     <string name="drawer_image_description">Опис фону</string>
     <string name="title_activity_nav">NavActivity</string>
+    <string name="search_title">Пошук</string>
+    <string name="search_hint">Здійснити пошук</string>
 
     <string name="navigation_drawer_contacts">Контакти</string>
     <string name="navigation_drawer_weather">Погода</string>
+    <string name="navigation_drawer_maps">Карти</string>
     <string name="navigation_drawer_logout">Вийти</string>
-    <string name="title_activity_main">MainActivity</string>
-
+    <string name="title_activity_main">Main Activity</string>
     <string name="navigation_drawer_open">Відкрити</string>
     <string name="navigation_drawer_close">Закрити</string>
 
@@ -36,7 +38,8 @@
 
     <string name="fragment_phone_contacts">Телефонна книга</string>
     <string name="fragment_my_contacts">Мої контакти</string>
+    <string name="dialog_contacts_text_name">Ім’я</string>
+    <string name="dialog_contacts_text_phone">Телефон</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

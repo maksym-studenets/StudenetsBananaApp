@@ -11,9 +11,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,33 +31,6 @@ import java.util.Comparator;
 
 public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.MyContactsViewHolder>
 {
-    /*
-    private List<Contact> contacts;
-    private ArrayList<Contact> mContactsArray;
-    private Context context;
-
-    @Override
-    public int getCount() {
-        return 0;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
-    }
-}
-*/
-
     private static final int MY_PERMISSION_REQUEST_CALL_PHONE = 110;
 
     private ArrayList<Contact> myContacts;
@@ -62,7 +38,7 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     private AlertDialog.Builder alertDialog;
     private Context context;
 
-    class MyContactsViewHolder extends RecyclerView.ViewHolder
+    class MyContactsViewHolder extends RecyclerView.ViewHolder implements Filterable
     {
         final TextView nameTextView;
         final TextView numberTextView;
@@ -73,6 +49,19 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
             nameTextView = (TextView) view.findViewById(R.id.contact_item_name);
             numberTextView = (TextView) view.findViewById(R.id.contact_item_phone);
             callButton = (ImageButton) view.findViewById(R.id.contact_item_call_button);
+        }
+
+        private void disableCallButton() {
+            callButton.setEnabled(false);
+        }
+
+        private void enableCallButton() {
+            callButton.setEnabled(true);
+        }
+
+        @Override
+        public Filter getFilter() {
+            return null;
         }
     }
 
@@ -98,8 +87,8 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         {
             @Override
             public void onClick(View v) {
-                callNumber(contact.getPhoneNumber());
-                checkCallPhonePermission();
+                callNumberL(contact.getPhoneNumber());
+                //callNumberL();
             }
         });
     }
@@ -109,13 +98,27 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         return myContacts.size();
     }
 
-    class ContactComparator implements Comparator<Contact>
-    {
+    public ItemTouchHelper.Callback createHelperCallback() {
+        return new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
-        @Override
-        public int compare(Contact o1, Contact o2) {
-            return o1.getName().compareToIgnoreCase(o2.getName());
-        }
+            @Override
+            public boolean onMove(RecyclerView recyclerView,
+                                  RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        };
+    }
+
+    public void addItem(Contact contact) {
+        myContacts.add(contact);
+        notifyItemInserted(myContacts.size());
     }
 
     private boolean checkCallPhonePermission() {
@@ -155,6 +158,34 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         } else {
             Toast.makeText(context, "Call permission was not granted",
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void callNumberL(String phoneNumber) {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        context.startActivity(callIntent);
+    }
+
+    private class ContactComparator implements Comparator<Contact>
+    {
+
+        @Override
+        public int compare(Contact o1, Contact o2) {
+            return o1.getName().compareToIgnoreCase(o2.getName());
+        }
+    }
+
+    private class ContactFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
         }
     }
 }

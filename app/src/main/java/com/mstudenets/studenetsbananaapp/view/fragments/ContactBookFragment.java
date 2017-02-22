@@ -2,7 +2,6 @@ package com.mstudenets.studenetsbananaapp.view.fragments;
 
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -13,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.controller.contacts.MyContactsAdapter;
@@ -28,10 +26,10 @@ public class ContactBookFragment extends Fragment /*implements
 {
     private ArrayList<Contact> phonebookContacts = new ArrayList<>();
     private MyContactsAdapter adapter;
-    //private ListView contactView;
     private RecyclerView contactView;
 
     public ContactBookFragment() {
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -44,6 +42,10 @@ public class ContactBookFragment extends Fragment /*implements
         initializeRecyclerView();
 
         return view;
+    }
+
+    public ArrayList<Contact> getPhonebookContacts() {
+        return phonebookContacts;
     }
 
     private void initializeRecyclerView() {
@@ -61,6 +63,7 @@ public class ContactBookFragment extends Fragment /*implements
         Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
         if (cursor.getCount() > 0) {
+            int i = 0;
             while (cursor.moveToNext()) {
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.

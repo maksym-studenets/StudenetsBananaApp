@@ -41,6 +41,20 @@ public class ContactsFragment extends Fragment
         return root;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializeContactsList();
+                } else {
+                    Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
     private void checkPermissions() throws NullPointerException {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -56,38 +70,6 @@ public class ContactsFragment extends Fragment
                         new String[] {Manifest.permission.READ_CONTACTS},
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
-        }
-
-
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.READ_CONTACTS)) {
-                ViewPager viewPager = (ViewPager)
-                        getView().findViewById(R.id.fragment_contacts_viewpager);
-                Snackbar.make(viewPager,
-                        "The app needs a permission to read your phone's contacts",
-                        Snackbar.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[] {Manifest.permission.READ_CONTACTS},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            }
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initializeContactsList();
-                } else {
-                    Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
-                }
         }
     }
 

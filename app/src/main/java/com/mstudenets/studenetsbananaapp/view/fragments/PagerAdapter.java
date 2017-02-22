@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 
-class PagerAdapter extends FragmentStatePagerAdapter
+public class PagerAdapter extends FragmentStatePagerAdapter
 {
     private final int tabCount;
 
