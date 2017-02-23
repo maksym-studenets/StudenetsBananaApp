@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.Contact;
@@ -132,24 +133,6 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-/*
-        if (id == R.id.nav_contacts) {
-            ContactsFragment contactsFragment = new ContactsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
-            fragmentTransaction.commit();
-        } else if (id == R.id.nav_weather) {
-            WeatherFragment weatherFragment = new WeatherFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.activity_main_fragment_container, weatherFragment);
-            fragmentTransaction.commit();
-        }
-
-        else if (id == R.id.nav_logout) {
-            logout();
-            return true;
-        }
-*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -183,6 +166,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logout() {
+        FirebaseAuth.getInstance().signOut();
         sharedPreferences.putBoolean(false);
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
@@ -197,5 +181,4 @@ public class MainActivity extends AppCompatActivity
                     new ContactBookFragment().getPhonebookContacts();
         }
     }
-
 }
