@@ -3,12 +3,11 @@ package com.mstudenets.studenetsbananaapp.controller.contacts;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -19,11 +18,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.model.Contact;
 import com.mstudenets.studenetsbananaapp.view.activities.MainActivity;
+import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +31,13 @@ import java.util.Comparator;
 public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.MyContactsViewHolder>
 {
     private static final int MY_PERMISSION_REQUEST_CALL_PHONE = 110;
+    private PermissionsCheckable permissionsCheckable;
 
     private ArrayList<Contact> myContacts;
     //private final DatabaseOperationManager operationManager;
     private AlertDialog.Builder alertDialog;
     private Context context;
+    private ContactsFragment fragment;
 
     class MyContactsViewHolder extends RecyclerView.ViewHolder implements Filterable
     {
@@ -65,10 +66,12 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         }
     }
 
-    public MyContactsAdapter(ArrayList<Contact> myContacts, Context context) {
+    public MyContactsAdapter(ArrayList<Contact> myContacts, Context context,
+                             Fragment fragment) {
         this.myContacts = myContacts;
         Collections.sort(myContacts, new ContactComparator());
         this.context = context;
+        this.fragment = (ContactsFragment) fragment;
     }
 
     @Override
@@ -87,7 +90,8 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         {
             @Override
             public void onClick(View v) {
-                callNumberL(contact.getPhoneNumber());
+                callNumber(contact.getPhoneNumber());
+
                 //callNumberL();
             }
         });
@@ -116,6 +120,13 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         };
     }
 
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+
+    }
+    */
+
     public void addItem(Contact contact) {
         myContacts.add(contact);
         notifyItemInserted(myContacts.size());
@@ -140,31 +151,27 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         return true;
     }
 
-    private void callNumber(String phoneNumber) {
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+
+    private void checkPhonePermission() {
         if (ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale((MainActivity) context,
-                    Manifest.permission.CALL_PHONE)) {
-                return;
-            } else {
-                ActivityCompat.requestPermissions((MainActivity) context,
-                        new String[]{Manifest.permission.CALL_PHONE},
-                        MY_PERMISSION_REQUEST_CALL_PHONE);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    (MainActivity) context, Manifest.permission.CALL_PHONE)) {
+                ConstraintLayout root = (ConstraintLayout)
+                        ((MainActivity) context).findViewById(R.id.contact_book_layout);
+                Snackbar.make(root, "This app needs permission to make calls",
+                        Snackbar.LENGTH_LONG).show();
             }
-            context.startActivity(callIntent);
-        } else {
-            Toast.makeText(context, "Call permission was not granted",
-                    Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void callNumberL(String phoneNumber) {
+    private void callNumber(String phoneNumber) {
+        //(MainActivity) context.chec
+        /*
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + phoneNumber));
-        context.startActivity(callIntent);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            context.startActivity(callIntent);
+            */
     }
 
     private class ContactComparator implements Comparator<Contact>
