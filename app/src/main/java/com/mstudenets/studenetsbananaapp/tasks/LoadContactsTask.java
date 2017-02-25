@@ -11,6 +11,8 @@ import android.provider.ContactsContract;
 import com.mstudenets.studenetsbananaapp.model.Contact;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>>
 {
@@ -55,13 +57,23 @@ public class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>>
             }
         }
         cursor.close();
+        Collections.sort(contacts, new ContactComparator());
         return contacts;
     }
 
     @Override
     protected void onPostExecute(ArrayList<Contact> contacts) {
-        super.onPostExecute(contacts);
+        //super.onPostExecute(contacts);
         progressDialog.dismiss();
+    }
+
+    private class ContactComparator implements Comparator<Contact>
+    {
+
+        @Override
+        public int compare(Contact o1, Contact o2) {
+            return o1.getName().compareToIgnoreCase(o2.getName());
+        }
     }
 }
 

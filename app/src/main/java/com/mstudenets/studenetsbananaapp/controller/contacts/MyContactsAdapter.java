@@ -25,7 +25,6 @@ import com.mstudenets.studenetsbananaapp.view.activities.MainActivity;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.MyContactsViewHolder>
@@ -69,7 +68,7 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     public MyContactsAdapter(ArrayList<Contact> myContacts, Context context,
                              Fragment fragment) {
         this.myContacts = myContacts;
-        Collections.sort(myContacts, new ContactComparator());
+        //Collections.sort(myContacts, new ContactComparator());
         this.context = context;
         this.fragment = (ContactsFragment) fragment;
     }
