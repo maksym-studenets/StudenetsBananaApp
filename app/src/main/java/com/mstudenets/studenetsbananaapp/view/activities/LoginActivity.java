@@ -1,10 +1,14 @@
 package com.mstudenets.studenetsbananaapp.view.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +45,9 @@ public class LoginActivity extends AppCompatActivity
 {
     private String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 9001;
+    private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
+
+    private boolean hasPermission = false;
 
     public static final String PREF_NAME = "ACCOUNT";
     public static final String SECURE_KEY = "SecureKeyBanana022017";
@@ -151,6 +158,9 @@ public class LoginActivity extends AppCompatActivity
                         Snackbar.LENGTH_LONG).show();
             }
         });
+
+
+        checkContactPermission();
     }
 
     @Override
@@ -175,6 +185,19 @@ public class LoginActivity extends AppCompatActivity
         }
 
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_READ_CONTACTS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                hasPermission = true;
+            } else {
+                hasPermission = false;
+                Toast.makeText(this, "Contacts permission denied", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private void loginApp() {
@@ -203,6 +226,7 @@ public class LoginActivity extends AppCompatActivity
                 startActivity(intent);
                 Toast.makeText(LoginActivity.this, "Successfully logged in",
                         Toast.LENGTH_SHORT).show();
+                checkContactPermission();
             } else {
                         /*Toast.makeText(LoginActivity.this, "Username or password do not match",
                                 Toast.LENGTH_LONG).show();
@@ -282,9 +306,25 @@ public class LoginActivity extends AppCompatActivity
             sharedPreferences.putBoolean(true);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            checkContactPermission();
         }
         else {
             Snackbar.make(rootView, R.string.google_sign_in_failed, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void checkContactPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+                Toast.makeText(this, "We need this permission to display your contacts list",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        PERMISSION_REQUEST_READ_CONTACTS);
+            }
         }
     }
 }

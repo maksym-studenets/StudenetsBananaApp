@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
 
     private int tabIndex;
+    private boolean hasPermission = false;
 
     private SecurePreferences sharedPreferences;
     private SearchView searchView;
@@ -54,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements
         String username = checkUser();
         setContentView(R.layout.activity_main);
         initializeNavbar(username);
+        initializeFragment();
 
-        checkContactPermission();
+        //checkContactPermission();
     }
 
     @Override
@@ -143,9 +145,10 @@ public class MainActivity extends AppCompatActivity implements
                                     @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_READ_CONTACTS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeFragment();
+                hasPermission = true;
             } else {
                 Toast.makeText(this, "Contacts permission denied", Toast.LENGTH_LONG).show();
+                hasPermission = false;
             }
         }
     }
@@ -201,9 +204,26 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializeFragment() {
         ContactsFragment contactsFragment = new ContactsFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
         fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
         fragmentTransaction.commit();
+
+        /*
+        if (hasPermission) {
+            ContactsFragment contactsFragment = new ContactsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
+            fragmentTransaction.commit();
+        } else {
+            MyContactsFragment myContactsFragment = new MyContactsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                    .beginTransaction();
+            fragmentTransaction.replace(R.id.activity_main_fragment_container, myContactsFragment);
+            fragmentTransaction.commit();
+        }
+        */
     }
 
     private void handleIntent(Intent intent) {

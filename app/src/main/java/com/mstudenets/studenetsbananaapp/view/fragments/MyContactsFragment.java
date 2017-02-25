@@ -4,7 +4,6 @@ package com.mstudenets.studenetsbananaapp.view.fragments;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +21,7 @@ import com.mstudenets.studenetsbananaapp.model.Contact;
 import java.util.ArrayList;
 
 
-public class MyContactsFragment extends Fragment
+public class MyContactsFragment extends ContactsFragment
 {
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 110;
 
