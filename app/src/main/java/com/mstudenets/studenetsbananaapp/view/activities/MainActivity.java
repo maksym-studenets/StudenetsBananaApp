@@ -25,9 +25,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.Contact;
+import com.mstudenets.studenetsbananaapp.model.User;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactBookFragment;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
 import com.mstudenets.studenetsbananaapp.view.fragments.MapsFragment;
@@ -40,21 +42,29 @@ public class MainActivity extends AppCompatActivity implements
 {
     private static final String PREF = "ACCOUNT";
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
+    private static final int LOGIN_ACTIVITY_DATA_REQUEST = 10;
 
     private int tabIndex;
     private boolean hasPermission = false;
+    private String username;
 
     private SecurePreferences sharedPreferences;
     private SearchView searchView;
+    private FirebaseAuth firebaseAuth;
+    private User user;
 
 
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         sharedPreferences = new SecurePreferences(this, PREF, LoginActivity.SECURE_KEY);
-        String username = checkUser();
+        //String username = checkUser();
+        checkCurrentUser();
+
+        checkUser();
         setContentView(R.layout.activity_main);
-        initializeNavbar(username);
+        //checkIntent();
+        initializeNavbar();
         initializeFragment();
 
         //checkContactPermission();
@@ -158,6 +168,15 @@ public class MainActivity extends AppCompatActivity implements
         handleIntent(intent);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN_ACTIVITY_DATA_REQUEST) {
+            if (resultCode == RESULT_OK)
+                user = (User) getIntent().getSerializableExtra("User");
+        }
+    }
+
+    @Deprecated
     private String checkUser() {
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn");
         if (!isLoggedIn) {
@@ -166,6 +185,29 @@ public class MainActivity extends AppCompatActivity implements
         }
         return sharedPreferences.getString("username");
     }
+
+    private void checkCurrentUser() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        //boolean hasUsernamePref = sharedPreferences.getBoolean("username");
+        boolean hasUsernamePref = sharedPreferences.containsKey("username");
+        if (hasUsernamePref) username = sharedPreferences.getString("username");
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn") ||
+                user != null;
+        if (!isLoggedIn) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /*
+    private void checkIntent() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            checkContactPermission();
+        }
+    }
+    */
 
     private void checkContactPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
@@ -184,6 +226,33 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void initializeNavbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        TextView usernameText = (TextView) header.findViewById(R.id.navbar_username_text);
+        String name;
+        /*
+        if (user != null)
+            name = user.getUsername();
+            */
+        //usernameText.setText(username);
+        if (firebaseAuth.getCurrentUser() != null)
+            name = firebaseAuth.getCurrentUser().getDisplayName();
+        else name = username;
+        usernameText.setText(name);
+    }
+
+    @Deprecated
     private void initializeNavbar(String username) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
