@@ -43,7 +43,6 @@
     <string name="title_activity_main">Main Activity</string>
     <string name="navigation_drawer_open">Відкрити</string>
     <string name="navigation_drawer_close">Закрити</string>
-
     <string name="action_settings">Налаштування</string>
     <string name="navbar_icon_description">Лого</string>
 
@@ -54,7 +53,6 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-
-    <string name="google_maps_api_key">AIzaSyC_EIZGbna_iUQ_ebIfXSqnK0b9RVKcp7U</string>
-    <string name="facebook_app_id">1640496789590315</string>
+    <string name="google_maps_api_key" translatable="false">AIzaSyC_EIZGbna_iUQ_ebIfXSqnK0b9RVKcp7U</string>
+    <string name="facebook_app_id" translatable="false">358354714549128</string>
 </resources>

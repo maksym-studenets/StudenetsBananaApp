@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,19 +39,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 public class WeatherFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
     private String TAG = WeatherFragment.class.getName();
     private static final int PERMISSION_LOCATION_REQUEST_CODE = 150;
 
+    private boolean isConnected;
+
     private GoogleApiClient mGoogleApiClient;
     private Location location;
-
     private Context context;
-    private TextView cityText;
-    private TextView tempText;
-    private TextView conditionText;
+    private TextView cityText, regionText, tempText, feelsLikeText;
+    private ImageView imageView;
     private ConstraintLayout fragmentContainer;
 
     public WeatherFragment() {
@@ -63,16 +67,18 @@ public class WeatherFragment extends Fragment implements
 
         context = getContext();
         cityText = (TextView) view.findViewById(R.id.fragment_weather_city);
+        regionText = (TextView) view.findViewById(R.id.fragment_weather_region);
         tempText = (TextView) view.findViewById(R.id.fragment_weather_temp);
-        conditionText = (TextView) view.findViewById(R.id.fragment_weather_condition);
+        feelsLikeText = (TextView) view.findViewById(R.id.fragment_weather_condition);
+        imageView = (ImageView) view.findViewById(R.id.fragment_weather_condition_icon);
         fragmentContainer = (ConstraintLayout) view.findViewById(R.id.fragment_weather_container);
+        hideWidgets();
 
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
+        isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
@@ -80,57 +86,49 @@ public class WeatherFragment extends Fragment implements
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API).build();
         }
-
-        if (isConnected) {
-            checkLocationPermission();
-            checkLocation();
-
-            /*
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(App.APIXU_CURRENT_URL).addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            CurrentWeatherService service = retrofit.create(CurrentWeatherService.class);
-            String location = "Las Palmas de Gran Canaria";
-            service.getCurrentWeather(App.APIXU_KEY, location)
-                    .enqueue(new Callback()
-                    {
-                        @Override
-                        public void onResponse(Call call, Response response) {
-                            WeatherModel model = (WeatherModel) response.body();
-                            String city = model.getLocation().getName() +
-                                    ", " + model.getLocation().getRegion() + ", " +
-                                    model.getLocation().getCountry();
-                            double temperature = model.getCurrent().getTempC();
-                            String condition = model.getCurrent().getCondition().getText();
-
-                            checkTemperature(temperature);
-
-                            cityText.setText(city);
-                            tempText.setText(String.valueOf(temperature));
-                            conditionText.setText(condition);
-                        }
-
-                        @Override
-                        public void onFailure(Call call, Throwable t) {
-                            cityText.setText("Failed to obtain data from the weather service");
-                            tempText.setVisibility(View.INVISIBLE);
-                            conditionText.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                    */
-        } else {
-            Toast.makeText(context, "Cannot connect to the Internet. Check network settings",
-                    Toast.LENGTH_LONG).show();
-            cityText.setVisibility(View.INVISIBLE);
-            tempText.setVisibility(View.INVISIBLE);
-            conditionText.setVisibility(View.INVISIBLE);
-        }
-
         return view;
     }
 
     @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
     public void onConnected(Bundle bundle) {
+        if (isConnected) {
+            checkLocationPermission();
+        } else {
+            Toast.makeText(context, "Cannot connect to the Internet. Check network settings",
+                    Toast.LENGTH_LONG).show();
+            hideWidgets();
+        }
+
+        LocationManager service = (LocationManager) getContext()
+                .getSystemService(LOCATION_SERVICE);
+        boolean enabled = service
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!enabled) {
+            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            //location = new Location()
+            double latitude = 28.45;
+            double longitude = -16.23;
+            String request = latitude + ", " + longitude;
+            sendRequest(request);
+            /*
+            Toast.makeText(getContext(), "Please turn GPS on", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+            */
+        }
+
         try {
             location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (location != null) {
@@ -172,6 +170,22 @@ public class WeatherFragment extends Fragment implements
         }
     }
 
+    private void showWidgets() {
+        cityText.setVisibility(View.VISIBLE);
+        regionText.setVisibility(View.VISIBLE);
+        tempText.setVisibility(View.VISIBLE);
+        feelsLikeText.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideWidgets() {
+        cityText.setVisibility(View.INVISIBLE);
+        regionText.setVisibility(View.INVISIBLE);
+        tempText.setVisibility(View.INVISIBLE);
+        feelsLikeText.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+    }
+
     private void checkLocation() {
         try {
             location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -199,24 +213,29 @@ public class WeatherFragment extends Fragment implements
                     @Override
                     public void onResponse(Call call, Response response) {
                         WeatherModel model = (WeatherModel) response.body();
-                        String city = model.getLocation().getName() +
-                                ", " + model.getLocation().getRegion() + ", " +
+                        String city = model.getLocation().getName();// +
+                        String region = model.getLocation().getRegion() + ", " +
                                 model.getLocation().getCountry();
                         double temperature = model.getCurrent().getTempC();
-                        String condition = model.getCurrent().getCondition().getText();
-
+                        double feelsLike = model.getCurrent().getFeelslikeC();
+                        //String conditionCode = model.getCurrent().getCondition().getText();
+                        //String icon = model.getCurrent().getCondition().getIcon();
+                        //String iconUrl = icon.substring(2);
                         checkTemperature(temperature);
 
                         cityText.setText(city);
+                        regionText.setText(region);
                         tempText.setText(String.valueOf(temperature));
-                        conditionText.setText(condition);
+                        feelsLikeText.setText("Feels like: " + String.valueOf(feelsLike));
+                        //Picasso.with(getContext()).load(iconUrl).into(imageView);
+                        showWidgets();
                     }
 
                     @Override
                     public void onFailure(Call call, Throwable t) {
                         cityText.setText("Failed to obtain data from the weather service");
                         tempText.setVisibility(View.INVISIBLE);
-                        conditionText.setVisibility(View.INVISIBLE);
+                        feelsLikeText.setVisibility(View.INVISIBLE);
                     }
                 });
     }

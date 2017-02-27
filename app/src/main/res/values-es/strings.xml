@@ -33,4 +33,15 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Ajustes</string>
     <string name="title_activity_nav">NavActivity</string>
+    <string name="dialog_contacts_text_name">Nombre</string>
+    <string name="dialog_contacts_text_phone">Teléfono</string>
+    <string name="facebook_login_error">Error iniciando sesión con Facebook</string>
+    <string name="google_sign_in_connection_failed">Error de conección</string>
+    <string name="google_sign_in_failed">Autorización con Google ha fracasado</string>
+    <string name="location_permission_denied">Permisión de ubicación fue rechazado</string>
+    <string name="navigation_drawer_maps">Mapas</string>
+    <string name="permission_rationale_location">Esta permisión es necesida para mostrar puntos de interés cerca de usted</string>
+    <string name="permission_required_toast">Autoriza permisión de ubicación por favor</string>
+    <string name="search_hint">Buscar...</string>
+    <string name="search_title">Busqueda</string>
 </resources>
