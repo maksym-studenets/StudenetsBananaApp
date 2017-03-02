@@ -2,7 +2,9 @@ package com.mstudenets.studenetsbananaapp.view.fragments;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -76,6 +78,9 @@ public class ContactsFragment extends Fragment
     }
 
     private void performCall() {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(callIntent);
     }
 
     private void initializeContactsList() {

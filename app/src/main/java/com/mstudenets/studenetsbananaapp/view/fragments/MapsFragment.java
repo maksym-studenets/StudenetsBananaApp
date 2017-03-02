@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,13 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mstudenets.studenetsbananaapp.R;
+import com.mstudenets.studenetsbananaapp.controller.maps.MarkersOperationManager;
+import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
+
+import java.util.ArrayList;
 
 
 public class MapsFragment extends Fragment implements
@@ -30,6 +36,13 @@ public class MapsFragment extends Fragment implements
 {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 10;
     private boolean isLocationPermissionGranted;
+    private boolean isEdit = false;
+
+    private AlertDialog.Builder alertDialog;
+    private ArrayList<MyMapMarker> mapMarkers = new ArrayList<>();
+    //private ArrayList<MarkerOptions> mMarkerOptions = new ArrayList<>();
+    private MarkersOperationManager operationManager;
+
     private MapView mapView;
     private GoogleMap mMap;
 
@@ -40,6 +53,8 @@ public class MapsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        operationManager = new MarkersOperationManager(getContext());
 
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -56,23 +71,74 @@ public class MapsFragment extends Fragment implements
         return view;
     }
 
+
     @Override
-    public void onMapReady(GoogleMap map) {
+    public void onMapReady(final GoogleMap map) {
         mMap = map;
         enableMapControls();
 
+        mapMarkers = operationManager.selectFromDatabase();
+        addMarkers();
+
         LatLng city = new LatLng(48.291, 25.935);
-        mMap.addMarker(new MarkerOptions().position(city).title("Chernivtsi"));
+        mMap.addMarker(new MarkerOptions().position(city).title("Chernivtsi"))
+                .setDraggable(true);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(city));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2500, null);
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
+
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("My marker");
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.addMarker(markerOptions);
+
+                MyMapMarker mapMarker = new MyMapMarker(latLng.latitude, latLng.longitude,
+                        markerOptions.getTitle(), "");
+                boolean operationSuccessful = operationManager.addRow(mapMarker);
+                if (operationSuccessful)
+                    mapMarkers.add(mapMarker);
+            }
+        });
+
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
+        {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                LatLng latLng = marker.getPosition();
+
+                for (int i = 0; i < mapMarkers.size(); i++) {
+                    if (mapMarkers.get(i).getLatitude() == latLng.latitude &&
+                            mapMarkers.get(i).getLongitude() == latLng.longitude) {
+                        mapMarkers.get(i).setLatitude(latLng.latitude);
+                        mapMarkers.get(i).setLongitude(latLng.longitude);
+
+                        operationManager.updateRow(mapMarkers.get(i));
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
+
     }
 
     @Override
@@ -154,6 +220,31 @@ public class MapsFragment extends Fragment implements
             e.printStackTrace();
         }
     }
+
+    private void addMarkers() {
+        if (mapMarkers != null) {
+            for (MyMapMarker myMapMarker : mapMarkers) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(myMapMarker.getLatitude(),
+                        myMapMarker.getLongitude())).title("")).setDraggable(false);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(myMapMarker.getLatitude(),
+                        myMapMarker.getLongitude())));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 1500, null);
+            }
+        }
+    }
+
+    private void readFromFile() {
+        /*
+        String filename = "markers";
+        File file = new File(getContext().getFilesDir(), filename);
+        FileOutputStream
+        */
+    }
+
+    private void writeToFile() {
+
+    }
+
 
 /*
 

@@ -14,21 +14,18 @@ import com.mstudenets.studenetsbananaapp.model.Contact;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class DatabaseOperationManager
+public class ContactsOperationManager
 {
-    private final Context context;
     private Dao<Contact, Integer> contactDao;
     private final DatabaseHelper databaseHelper;
-    private ArrayList<Contact> contacts;
 
-    public DatabaseOperationManager(Context context) {
-        this.context = context;
+    public ContactsOperationManager(Context context) {
         databaseHelper = new DatabaseHelper(context);
         try {
             contactDao = databaseHelper.getContactsDao();
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(DatabaseOperationManager.class.getName(),
+            Log.e(ContactsOperationManager.class.getName(),
                     " --- error getting Dao object");
             throw new RuntimeException(e);
         }
@@ -47,11 +44,11 @@ public class DatabaseOperationManager
         try {
             QueryBuilder<Contact, Integer> queryBuilder = contactDao.queryBuilder();
             PreparedQuery<Contact> preparedQuery = queryBuilder.prepare();
-            contacts = (ArrayList<Contact>) contactDao.query(preparedQuery);
+            ArrayList<Contact> contacts = (ArrayList<Contact>) contactDao.query(preparedQuery);
             return contacts;
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(DatabaseOperationManager.class.getName(),
+            Log.e(ContactsOperationManager.class.getName(),
                     " --- error retrieving data from the database ");
             throw new RuntimeException(e);
         }
@@ -60,12 +57,12 @@ public class DatabaseOperationManager
     public boolean addRow(Contact contact) {
         try {
             contactDao.create(contact);
-            Log.i(DatabaseOperationManager.class.getName(),
+            Log.i(ContactsOperationManager.class.getName(),
                     " --- successfully added record ");
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(DatabaseOperationManager.class.getName(),
+            Log.e(ContactsOperationManager.class.getName(),
                     " --- error adding record ");
             return false;
         }
@@ -77,12 +74,12 @@ public class DatabaseOperationManager
             DeleteBuilder<Contact, Integer> deleteBuilder = dao.deleteBuilder();
             deleteBuilder.where().eq("id", id);
             deleteBuilder.delete();
-            Log.i(DatabaseOperationManager.class.getName(),
+            Log.i(ContactsOperationManager.class.getName(),
                     " --- successfully deleted record ");
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(DatabaseOperationManager.class.getName(),
+            Log.e(ContactsOperationManager.class.getName(),
                     " --- error deleting record ");
             return false;
         }
@@ -96,12 +93,12 @@ public class DatabaseOperationManager
             updateBuilder.updateColumnValue("name", contact.getName());
             updateBuilder.updateColumnValue("phone", contact.getPhoneNumber());
             updateBuilder.update();
-            Log.i(DatabaseOperationManager.class.getName(),
+            Log.i(ContactsOperationManager.class.getName(),
                     " --- successfully updated record ");
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(DatabaseOperationManager.class.getName(),
+            Log.e(ContactsOperationManager.class.getName(),
                     " --- error updating record ");
             return false;
         }

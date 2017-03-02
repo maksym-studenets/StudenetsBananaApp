@@ -5,24 +5,19 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import java.util.Comparator;
-
 @DatabaseTable(tableName = "contacts")
-public class Contact implements Comparator<Contact>
+public class Contact
 {
-    @DatabaseField(columnName = "id", dataType = DataType.INTEGER, generatedId = true)
+    @DatabaseField(columnName = "id", generatedId = true)
     private int id;
+
     @DatabaseField(columnName = "name", dataType = DataType.STRING)
     private String name;
-    @DatabaseField(columnName = "phone", dataType = DataType.STRING)
+
+    @DatabaseField(columnName = "name", dataType = DataType.STRING)
     private String phoneNumber;
 
     public Contact() {
-    }
-
-    public Contact(String name, String phoneNumber) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
     }
 
     public Contact(int id, String name, String phoneNumber) {
@@ -31,17 +26,25 @@ public class Contact implements Comparator<Contact>
         this.phoneNumber = phoneNumber;
     }
 
+    public Contact(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    @Override
-    public int compare(Contact o1, Contact o2) {
-        return o1.name.compareToIgnoreCase(o2.name);
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public int getId() {

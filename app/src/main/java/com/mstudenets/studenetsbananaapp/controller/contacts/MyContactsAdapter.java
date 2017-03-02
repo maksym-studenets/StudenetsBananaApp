@@ -33,7 +33,6 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     private PermissionsCheckable permissionsCheckable;
 
     private ArrayList<Contact> myContacts;
-    //private final DatabaseOperationManager operationManager;
     private AlertDialog.Builder alertDialog;
     private Context context;
     private ContactsFragment fragment;
@@ -90,8 +89,6 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
             @Override
             public void onClick(View v) {
                 callNumber(contact.getPhoneNumber());
-
-                //callNumberL();
             }
         });
     }
@@ -104,7 +101,6 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     public ItemTouchHelper.Callback createHelperCallback() {
         return new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
             @Override
             public boolean onMove(RecyclerView recyclerView,
                                   RecyclerView.ViewHolder viewHolder,
@@ -114,7 +110,6 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
             }
         };
     }
@@ -148,20 +143,6 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         }
 
         return true;
-    }
-
-
-    private void checkPhonePermission() {
-        if (ActivityCompat.checkSelfPermission(context,
-                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    (MainActivity) context, Manifest.permission.CALL_PHONE)) {
-                ConstraintLayout root = (ConstraintLayout)
-                        ((MainActivity) context).findViewById(R.id.contact_book_layout);
-                Snackbar.make(root, "This app needs permission to make calls",
-                        Snackbar.LENGTH_LONG).show();
-            }
-        }
     }
 
     private void callNumber(String phoneNumber) {

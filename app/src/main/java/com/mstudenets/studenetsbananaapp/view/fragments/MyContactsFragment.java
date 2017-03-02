@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.contacts.DatabaseOperationManager;
+import com.mstudenets.studenetsbananaapp.controller.contacts.ContactsOperationManager;
 import com.mstudenets.studenetsbananaapp.controller.contacts.MyContactsAdapter;
 import com.mstudenets.studenetsbananaapp.model.Contact;
 
@@ -26,7 +26,7 @@ public class MyContactsFragment extends ContactsFragment
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 110;
 
     private ArrayList<Contact> myContacts = new ArrayList<>();
-    private DatabaseOperationManager operationManager;
+    private ContactsOperationManager operationManager;
     private MyContactsAdapter adapter;
     private RecyclerView contactsView;
     private AlertDialog.Builder alertDialog;
@@ -45,7 +45,7 @@ public class MyContactsFragment extends ContactsFragment
         FloatingActionButton fab = (FloatingActionButton) view
                 .findViewById(R.id.my_contacts_fab_add);
         contactsView = (RecyclerView) view.findViewById(R.id.my_contacts_recyclerview);
-        operationManager = new DatabaseOperationManager(getContext());
+        operationManager = new ContactsOperationManager(getContext());
         operationManager.getContactDao();
 
         myContacts = operationManager.selectFromDatabase();
@@ -145,7 +145,7 @@ public class MyContactsFragment extends ContactsFragment
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 110;
 
     private ArrayList<Contact> myContacts = new ArrayList<>();
-    private DatabaseOperationManager operationManager;
+    private ContactsOperationManager operationManager;
     private MyContactsAdapter adapter;
     private RecyclerView contactsView;
     private AlertDialog.Builder alertDialog;
@@ -170,7 +170,7 @@ public class MyContactsFragment extends ContactsFragment
         FloatingActionButton fab = (FloatingActionButton) view
                 .findViewById(R.id.my_contacts_fab_add);
         contactsView = (RecyclerView) view.findViewById(R.id.my_contacts_recyclerview);
-        operationManager = new DatabaseOperationManager(getContext());
+        operationManager = new ContactsOperationManager(getContext());
         operationManager.getContactDao();
 
 
