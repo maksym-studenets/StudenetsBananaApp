@@ -1,4 +1,4 @@
-package com.mstudenets.studenetsbananaapp.controller.contacts;
+package com.mstudenets.studenetsbananaapp.controller.database;
 
 import android.content.Context;
 

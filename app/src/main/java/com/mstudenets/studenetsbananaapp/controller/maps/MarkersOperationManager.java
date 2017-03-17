@@ -9,24 +9,28 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
-import com.mstudenets.studenetsbananaapp.controller.contacts.ContactsOperationManager;
+import com.mstudenets.studenetsbananaapp.App;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseHelper;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
 import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+@Deprecated
 public class MarkersOperationManager
 {
     private Dao<MyMapMarker, Integer> mapMarkerDao;
-    private final MapDatabaseHelper databaseHelper;
+    private App app;
+    private final DatabaseHelper databaseHelper = App.getDatabaseHelper();
+    //private final MapDatabaseHelper databaseHelper;
 
     public MarkersOperationManager(Context context) {
-        databaseHelper = new MapDatabaseHelper(context);
         try {
-            mapMarkerDao = databaseHelper.getMarkersDao();
+            mapMarkerDao = databaseHelper.getMapMarkersDao();
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(ContactsOperationManager.class.getName(),
+            Log.e(DatabaseOperationManager.class.getName(),
                     " --- error getting Dao object");
             throw new RuntimeException(e);
         }
@@ -34,7 +38,7 @@ public class MarkersOperationManager
 
     public Dao<MyMapMarker, Integer> getMapMarkerDao() {
         try {
-            return databaseHelper.getMarkersDao();
+            return databaseHelper.getMapMarkersDao();
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -48,7 +52,7 @@ public class MarkersOperationManager
             return (ArrayList<MyMapMarker>) mapMarkerDao.query(preparedQuery);
         } catch (SQLException e) {
             e.printStackTrace();
-            Log.e(ContactsOperationManager.class.getName(),
+            Log.e(DatabaseOperationManager.class.getName(),
                     " --- error retrieving data from the database ");
             return null;
         }

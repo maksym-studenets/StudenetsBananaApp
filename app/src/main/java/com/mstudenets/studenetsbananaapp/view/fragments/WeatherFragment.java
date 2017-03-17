@@ -27,11 +27,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.mstudenets.studenetsbananaapp.App;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.libs.weatherlibrary.datamodel.WeatherModel;
-import com.mstudenets.studenetsbananaapp.tasks.weather.CurrentWeatherService;
+import com.mstudenets.studenetsbananaapp.tasks.CurrentWeatherService;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +52,7 @@ public class WeatherFragment extends Fragment implements
 
     private GoogleApiClient mGoogleApiClient;
     private Location location;
+    private LocationRequest locationRequest;
     private Context context;
     private TextView cityText, regionText, tempText, feelsLikeText;
     private ImageView imageView;
@@ -91,8 +93,9 @@ public class WeatherFragment extends Fragment implements
 
     @Override
     public void onStart() {
-        mGoogleApiClient.connect();
         super.onStart();
+        if (mGoogleApiClient != null)
+            mGoogleApiClient.connect();
     }
 
     @Override
@@ -136,6 +139,11 @@ public class WeatherFragment extends Fragment implements
                 double longitude = location.getLongitude();
                 String request = latitude + ", " + longitude;
                 sendRequest(request);
+            } else {
+                double latitude = 28.45;
+                double longitude = -16.23;
+                String request = latitude + ", " + longitude;
+                sendRequest(request);
             }
         } catch (SecurityException e) {
             e.printStackTrace();
@@ -154,7 +162,6 @@ public class WeatherFragment extends Fragment implements
                 Snackbar.LENGTH_LONG).show();
     }
 
-
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -169,6 +176,20 @@ public class WeatherFragment extends Fragment implements
             }
         }
     }
+
+    public void onLocationChanged(Location location) {
+
+    }
+
+    /*
+    private void checkLocationUpdates() {
+        locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(60 * 1000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                locationRequest, this);
+    }
+    */
 
     private void showWidgets() {
         cityText.setVisibility(View.VISIBLE);

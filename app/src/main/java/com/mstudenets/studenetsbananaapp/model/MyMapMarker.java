@@ -6,7 +6,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 
-@DatabaseTable(tableName = "mapmarkers.db")
+@DatabaseTable(tableName = "markers")
 public class MyMapMarker
 {
     @DatabaseField(columnName = "id", generatedId = true, dataType = DataType.INTEGER)
@@ -31,7 +31,6 @@ public class MyMapMarker
 
     public MyMapMarker(double latitude, double longitude,
                        String title, String description) {
-        this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.title = title;

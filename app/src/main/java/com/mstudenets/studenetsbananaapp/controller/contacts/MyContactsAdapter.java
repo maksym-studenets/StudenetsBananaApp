@@ -33,6 +33,7 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     private PermissionsCheckable permissionsCheckable;
 
     private ArrayList<Contact> myContacts;
+    private ArrayList<Contact> filteredList;
     private AlertDialog.Builder alertDialog;
     private Context context;
     private ContactsFragment fragment;
@@ -67,7 +68,7 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     public MyContactsAdapter(ArrayList<Contact> myContacts, Context context,
                              Fragment fragment) {
         this.myContacts = myContacts;
-        //Collections.sort(myContacts, new ContactComparator());
+        this.filteredList = myContacts;
         this.context = context;
         this.fragment = (ContactsFragment) fragment;
     }
@@ -120,6 +121,38 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
 
     }
     */
+
+    public Filter getFilter() {
+        return new Filter()
+        {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String charSequence = constraint.toString();
+                if (charSequence.isEmpty()) {
+                    filteredList = myContacts;
+                } else {
+                    ArrayList<Contact> mFilteredList = new ArrayList<>();
+                    for (Contact contact : myContacts) {
+                        if (contact.getName().toLowerCase().contains(charSequence) ||
+                                contact.getPhoneNumber().toLowerCase().contains(charSequence)) {
+                            mFilteredList.add(contact);
+                        }
+                    }
+                    filteredList = mFilteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredList = (ArrayList<Contact>) results.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 
     public void addItem(Contact contact) {
         myContacts.add(contact);

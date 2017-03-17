@@ -1,4 +1,4 @@
-package com.mstudenets.studenetsbananaapp.tasks.weather;
+package com.mstudenets.studenetsbananaapp.tasks;
 
 
 import com.mstudenets.studenetsbananaapp.libs.weatherlibrary.datamodel.WeatherModel;

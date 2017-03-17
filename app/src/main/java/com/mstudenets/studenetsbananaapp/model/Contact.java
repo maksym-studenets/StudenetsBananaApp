@@ -14,7 +14,7 @@ public class Contact
     @DatabaseField(columnName = "name", dataType = DataType.STRING)
     private String name;
 
-    @DatabaseField(columnName = "name", dataType = DataType.STRING)
+    @DatabaseField(columnName = "phone", dataType = DataType.STRING)
     private String phoneNumber;
 
     public Contact() {

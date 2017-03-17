@@ -8,6 +8,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  * Created by maksym on 01.03.17.
  */
 
+@Deprecated
 public class MapDatabaseManager
 {
     public static volatile MapDatabaseManager instance;

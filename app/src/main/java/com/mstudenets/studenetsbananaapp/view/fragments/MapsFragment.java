@@ -24,7 +24,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.maps.MarkersOperationManager;
 import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class MapsFragment extends Fragment implements
     private AlertDialog.Builder alertDialog;
     private ArrayList<MyMapMarker> mapMarkers = new ArrayList<>();
     //private ArrayList<MarkerOptions> mMarkerOptions = new ArrayList<>();
-    private MarkersOperationManager operationManager;
+    //private MarkersOperationManager operationManager;
 
     private MapView mapView;
     private GoogleMap mMap;
@@ -53,8 +52,6 @@ public class MapsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
-
-        operationManager = new MarkersOperationManager(getContext());
 
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -71,14 +68,10 @@ public class MapsFragment extends Fragment implements
         return view;
     }
 
-
     @Override
     public void onMapReady(final GoogleMap map) {
         mMap = map;
         enableMapControls();
-
-        mapMarkers = operationManager.selectFromDatabase();
-        addMarkers();
 
         LatLng city = new LatLng(48.291, 25.935);
         mMap.addMarker(new MarkerOptions().position(city).title("Chernivtsi"))
@@ -101,9 +94,7 @@ public class MapsFragment extends Fragment implements
 
                 MyMapMarker mapMarker = new MyMapMarker(latLng.latitude, latLng.longitude,
                         markerOptions.getTitle(), "");
-                boolean operationSuccessful = operationManager.addRow(mapMarker);
-                if (operationSuccessful)
-                    mapMarkers.add(mapMarker);
+                mapMarkers.add(mapMarker);
             }
         });
 
@@ -120,14 +111,13 @@ public class MapsFragment extends Fragment implements
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 LatLng latLng = marker.getPosition();
-
                 for (int i = 0; i < mapMarkers.size(); i++) {
                     if (mapMarkers.get(i).getLatitude() == latLng.latitude &&
                             mapMarkers.get(i).getLongitude() == latLng.longitude) {
                         mapMarkers.get(i).setLatitude(latLng.latitude);
                         mapMarkers.get(i).setLongitude(latLng.longitude);
 
-                        operationManager.updateRow(mapMarkers.get(i));
+                        //operationManager.updateRow(mapMarkers.get(i));
                     }
                 }
             }
@@ -138,7 +128,6 @@ public class MapsFragment extends Fragment implements
     public void onPause() {
         super.onPause();
         mapView.onPause();
-
     }
 
     @Override
@@ -232,85 +221,4 @@ public class MapsFragment extends Fragment implements
             }
         }
     }
-
-    private void readFromFile() {
-        /*
-        String filename = "markers";
-        File file = new File(getContext().getFilesDir(), filename);
-        FileOutputStream
-        */
-    }
-
-    private void writeToFile() {
-
-    }
-
-
-/*
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        LatLng chernivtsi = new LatLng(48.2937878, 25.9172208);
-        mMap.addMarker(new MarkerOptions().position(chernivtsi).title("Chernivtsi"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(chernivtsi));
-        /*
-        mMap.setOnMyLocationButtonClickListener(this);
-        enableMyLocation();
-        */
-  /*  }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            return;
-        }
-        if (MapsPermissionUtils.isPermissionGranted(permissions, grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            enableMyLocation();
-        } else {
-            permissionDenied = true;
-        }
-    }
-
-    /*
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-        if (permissionDenied) {
-            // Permission was not granted, display error dialog.
-            showMissingPermissionError();
-            permissionDenied = false;
-        }
-    }
-    */
-
-  /*
-
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            MapsPermissionUtils.requestPermission((AppCompatActivity) getActivity(),
-                    LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-        } else if (mMap != null) {
-            mMap.setMyLocationEnabled(true);
-        }
-    }
-
-    /*
-    private void showMissingPermissionError() {
-        MapsPermissionUtils.PermissionDeniedDialog
-                .newInstance(true).show(getFragmentManager(), "dialog");
-    }
-    */
 }

@@ -1,20 +1,20 @@
-package com.mstudenets.studenetsbananaapp.controller.fruits;
+package com.mstudenets.studenetsbananaapp.controller.database;
 
 
 import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
-class HelperFactory
+public class HelperFactory
 {
     private static DatabaseHelper databaseHelper;
 
-    public static DatabaseHelper getHelper() {
+    public static DatabaseHelper getDatabaseHelper() {
         return databaseHelper;
     }
 
     public static void setHelper(Context context) {
-        databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        //databaseHelper = OpenHelperManager.getHelper(context, Contact.class);
     }
 
     public static void releaseHelper() {

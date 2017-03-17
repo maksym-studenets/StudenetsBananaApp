@@ -32,10 +32,6 @@ public class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>>
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.show();
-        /*
-        progressDialog = ProgressDialog.show(context, "Loading contacts",
-                "Please wait while we fetch your data", false, true);
-                */
     }
 
     @Override
@@ -81,40 +77,9 @@ public class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>>
 
     private class ContactComparator implements Comparator<Contact>
     {
-
         @Override
         public int compare(Contact o1, Contact o2) {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     }
 }
-
-/*
-ContentResolver contentResolver = getActivity().getContentResolver();
-        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, null);
-        if (cursor.getCount() > 0) {
-            //int i = 0;
-            while (cursor.moveToNext()) {
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.
-                        DISPLAY_NAME));
-
-                if (cursor.getInt(cursor.getColumnIndex(
-                        ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor phoneCursor = contentResolver.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    while (phoneCursor.moveToNext()) {
-                        String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(
-                                ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        phonebookContacts.add(new Contact(name, phoneNumber));
-                        phoneCursor.close();
-                    }
-                }
-            }
-        }
-        //phoneCursor.close();
-        cursor.close();
- */

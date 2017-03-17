@@ -8,12 +8,13 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import com.mstudenets.studenetsbananaapp.controller.contacts.DatabaseHelper;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseHelper;
 import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
 
 import java.sql.SQLException;
 
 
+@Deprecated
 public class MapDatabaseHelper extends OrmLiteSqliteOpenHelper
 {
     private static final String DATABASE_NAME = "contacts.db";

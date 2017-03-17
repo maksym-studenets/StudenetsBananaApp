@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mstudenets.studenetsbananaapp.R;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseHelper;
 import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.Contact;
 import com.mstudenets.studenetsbananaapp.model.User;
@@ -44,30 +45,23 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
     private static final int LOGIN_ACTIVITY_DATA_REQUEST = 10;
 
-    private int tabIndex;
     private boolean hasPermission = false;
     private String username;
 
+    private DatabaseHelper databaseHelper;
     private SecurePreferences sharedPreferences;
     private SearchView searchView;
     private FirebaseAuth firebaseAuth;
-    private User user;
 
 
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         sharedPreferences = new SecurePreferences(this, PREF, LoginActivity.SECURE_KEY);
-        //String username = checkUser();
         checkCurrentUser();
-
-        checkUser();
         setContentView(R.layout.activity_main);
-        //checkIntent();
         initializeNavbar();
         initializeFragment();
-
-        //checkContactPermission();
     }
 
     @Override
@@ -81,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
                 .getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+        /*
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
@@ -93,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
                 return false;
             }
         });
+        */
 
         return true;
     }
@@ -109,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        tabIndex = item.getItemId();
+        int tabIndex = item.getItemId();
         FragmentTransaction fragmentTransaction;
 
         switch (tabIndex) {
@@ -171,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_ACTIVITY_DATA_REQUEST) {
+            User user;
             if (resultCode == RESULT_OK)
                 user = (User) getIntent().getSerializableExtra("User");
         }
@@ -252,47 +249,13 @@ public class MainActivity extends AppCompatActivity implements
         usernameText.setText(name);
     }
 
-    @Deprecated
-    private void initializeNavbar(String username) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View header = navigationView.getHeaderView(0);
-        TextView usernameText = (TextView) header.findViewById(R.id.navbar_username_text);
-        usernameText.setText(username);
-    }
-
     private void initializeFragment() {
         ContactsFragment contactsFragment = new ContactsFragment();
+        //checkContactPermission();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager()
                 .beginTransaction();
         fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
         fragmentTransaction.commit();
-
-        /*
-        if (hasPermission) {
-            ContactsFragment contactsFragment = new ContactsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                    .beginTransaction();
-            fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
-            fragmentTransaction.commit();
-        } else {
-            MyContactsFragment myContactsFragment = new MyContactsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                    .beginTransaction();
-            fragmentTransaction.replace(R.id.activity_main_fragment_container, myContactsFragment);
-            fragmentTransaction.commit();
-        }
-        */
     }
 
     private void handleIntent(Intent intent) {
@@ -310,199 +273,4 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
         Toast.makeText(this, R.string.activity_main_logout_successful, Toast.LENGTH_SHORT).show();
     }
-
-    /*
-    private static final int PERMISSION_REQUEST_READ_CONTACTS = 100;
-    private static final int PERMISSION_REQUEST_CALL_PHONE = 101;
-
-    private SecurePreferences sharedPreferences;
-    private SearchView searchView;
-    private static final String PREF = "ACCOUNT";
-    private int tabIndex;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        sharedPreferences = new SecurePreferences(this, PREF, LoginActivity.SECURE_KEY);
-        String username = checkUser();
-        setContentView(R.layout.activity_main);
-        initializeNavbar(username);
-
-        //checkContactsPermission();
-        initializeFragment();
-
-        handleIntent(getIntent());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.menu_search_button)
-                .getActionView();
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-        {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        return true;
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        tabIndex = item.getItemId();
-        FragmentTransaction fragmentTransaction;
-
-        switch (tabIndex) {
-            case R.id.nav_contacts:
-                ContactsFragment contactsFragment = new ContactsFragment();
-                fragmentTransaction = getSupportFragmentManager()
-                        .beginTransaction();
-                fragmentTransaction.replace(R.id.activity_main_fragment_container,
-                        contactsFragment);
-                fragmentTransaction.commit();
-                searchView.setVisibility(View.VISIBLE);
-                break;
-            case R.id.nav_weather:
-                WeatherFragment weatherFragment = new WeatherFragment();
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.activity_main_fragment_container,
-                        weatherFragment);
-                fragmentTransaction.commit();
-                searchView.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.nav_maps:
-                MapsFragment mapsFragment = new MapsFragment();
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.activity_main_fragment_container,
-                        mapsFragment);
-                fragmentTransaction.commit();
-                searchView.setVisibility(View.INVISIBLE);
-                break;
-            case R.id.nav_logout:
-                logout();
-                return true;
-            default:
-                break;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    public void checkContactsPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_CONTACTS)) {
-                Toast.makeText(this, "We need this permissions to show your contacts list",
-                        Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.READ_CONTACTS },
-                        PERMISSION_REQUEST_READ_CONTACTS);
-            }
-        } else {
-
-        }
-    }
-
-    public void checkCallPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CALL_PHONE)) {
-                Toast.makeText(this, "We need this permissions to call your contacts from the app",
-                        Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.CALL_PHONE },
-                        PERMISSION_REQUEST_CALL_PHONE);
-            }
-        }
-    }
-
-    private void initializeNavbar(String username) {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View header = navigationView.getHeaderView(0);
-        TextView usernameText = (TextView) header.findViewById(R.id.navbar_username_text);
-        usernameText.setText(username);
-    }
-
-    private void initializeFragment() {
-        ContactsFragment contactsFragment = new ContactsFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
-        fragmentTransaction.commit();
-    }
-
-    private String checkUser() {
-        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn");
-        if (!isLoggedIn) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-        return sharedPreferences.getString("username");
-    }
-
-    private void logout() {
-        FirebaseAuth.getInstance().signOut();
-        sharedPreferences.putBoolean(false);
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
-        Toast.makeText(this, R.string.activity_main_logout_successful, Toast.LENGTH_SHORT).show();
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            ArrayList<Contact> phoneBookContacts =
-                    new ContactBookFragment().getPhonebookContacts();
-        }
-    }
-    */
 }

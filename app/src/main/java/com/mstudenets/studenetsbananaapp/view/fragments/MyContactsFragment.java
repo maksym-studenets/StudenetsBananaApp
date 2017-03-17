@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.contacts.ContactsOperationManager;
 import com.mstudenets.studenetsbananaapp.controller.contacts.MyContactsAdapter;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
 import com.mstudenets.studenetsbananaapp.model.Contact;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class MyContactsFragment extends ContactsFragment
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 110;
 
     private ArrayList<Contact> myContacts = new ArrayList<>();
-    private ContactsOperationManager operationManager;
+    private DatabaseOperationManager operationManager;
     private MyContactsAdapter adapter;
     private RecyclerView contactsView;
     private AlertDialog.Builder alertDialog;
@@ -45,10 +45,12 @@ public class MyContactsFragment extends ContactsFragment
         FloatingActionButton fab = (FloatingActionButton) view
                 .findViewById(R.id.my_contacts_fab_add);
         contactsView = (RecyclerView) view.findViewById(R.id.my_contacts_recyclerview);
-        operationManager = new ContactsOperationManager(getContext());
+
+        operationManager = new DatabaseOperationManager(getContext());
         operationManager.getContactDao();
 
-        myContacts = operationManager.selectFromDatabase();
+        myContacts = operationManager.selectContactsFromDatabase();
+
         initializeRecyclerView();
         initializeDialog();
 
@@ -100,7 +102,7 @@ public class MyContactsFragment extends ContactsFragment
                         if (add) {
                             add = false;
                             Contact contact = new Contact(name, phone);
-                            boolean isSuccessful = operationManager.addRow(contact);
+                            boolean isSuccessful = operationManager.addContact(contact);
                             if (isSuccessful) {
                                 adapter.addItem(contact);
                                 dialog.dismiss();
@@ -110,7 +112,7 @@ public class MyContactsFragment extends ContactsFragment
                         } else {
                             int id = myContacts.get(editPosition).getId();
                             Contact contact = new Contact(id, name, phone);
-                            boolean isSuccessful = operationManager.updateRow(contact);
+                            boolean isSuccessful = operationManager.updateContact(contact);
                             if (isSuccessful) {
                                 myContacts.set(editPosition, contact);
                                 adapter.notifyDataSetChanged();
@@ -145,7 +147,7 @@ public class MyContactsFragment extends ContactsFragment
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 110;
 
     private ArrayList<Contact> myContacts = new ArrayList<>();
-    private ContactsOperationManager operationManager;
+    private DatabaseOperationManager operationManager;
     private MyContactsAdapter adapter;
     private RecyclerView contactsView;
     private AlertDialog.Builder alertDialog;
@@ -170,7 +172,7 @@ public class MyContactsFragment extends ContactsFragment
         FloatingActionButton fab = (FloatingActionButton) view
                 .findViewById(R.id.my_contacts_fab_add);
         contactsView = (RecyclerView) view.findViewById(R.id.my_contacts_recyclerview);
-        operationManager = new ContactsOperationManager(getContext());
+        operationManager = new DatabaseOperationManager(getContext());
         operationManager.getContactDao();
 
 
@@ -188,7 +190,7 @@ public class MyContactsFragment extends ContactsFragment
         initializeRecyclerView();
         initializeDialog();
 
-        myContacts = operationManager.selectFromDatabase();
+        myContacts = operationManager.selectContactsFromDatabase();
         initializeRecyclerView();
         //checkPermissions();
 
@@ -225,7 +227,7 @@ public class MyContactsFragment extends ContactsFragment
                         if (add) {
                             add = false;
                             Contact contact = new Contact(name, phone);
-                            boolean isSuccessful = operationManager.addRow(contact);
+                            boolean isSuccessful = operationManager.addContact(contact);
                             if (isSuccessful) {
                                 adapter.addItem(contact);
                                 dialog.dismiss();
@@ -235,7 +237,7 @@ public class MyContactsFragment extends ContactsFragment
                         } else {
                             int id = myContacts.get(editPosition).getId();
                             Contact contact = new Contact(id, name, phone);
-                            boolean isSuccessful = operationManager.updateRow(contact);
+                            boolean isSuccessful = operationManager.updateContact(contact);
                             if (isSuccessful) {
                                 myContacts.set(editPosition, contact);
                                 adapter.notifyDataSetChanged();
