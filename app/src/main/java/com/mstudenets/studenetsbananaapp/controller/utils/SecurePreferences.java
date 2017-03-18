@@ -1,7 +1,7 @@
 /*
 
   */
-package com.mstudenets.studenetsbananaapp.controller.secure;
+package com.mstudenets.studenetsbananaapp.controller.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

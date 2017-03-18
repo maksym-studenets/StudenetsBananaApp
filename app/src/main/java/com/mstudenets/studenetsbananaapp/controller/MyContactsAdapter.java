@@ -1,62 +1,55 @@
-package com.mstudenets.studenetsbananaapp.controller.contacts;
+package com.mstudenets.studenetsbananaapp.controller;
 
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.content.DialogInterface;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mstudenets.studenetsbananaapp.R;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
 import com.mstudenets.studenetsbananaapp.model.Contact;
-import com.mstudenets.studenetsbananaapp.view.activities.MainActivity;
-import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.MyContactsViewHolder>
 {
     private static final int MY_PERMISSION_REQUEST_CALL_PHONE = 110;
-    private PermissionsCheckable permissionsCheckable;
+
+    private Context context;
+    private AlertDialog.Builder editDialog;
+    private EditText nameEdit, phoneEdit;
+
+    private int editPosition;
+    private boolean isEditable;
 
     private ArrayList<Contact> myContacts;
     private ArrayList<Contact> filteredList;
-    private AlertDialog.Builder alertDialog;
-    private Context context;
-    private ContactsFragment fragment;
 
     class MyContactsViewHolder extends RecyclerView.ViewHolder implements Filterable
     {
+        final ConstraintLayout contactItem;
         final TextView nameTextView;
         final TextView numberTextView;
         final ImageButton callButton;
 
-        MyContactsViewHolder(View view) {
+        MyContactsViewHolder(final View view) {
             super(view);
+            contactItem = (ConstraintLayout) view.findViewById(R.id.contact_item);
             nameTextView = (TextView) view.findViewById(R.id.contact_item_name);
             numberTextView = (TextView) view.findViewById(R.id.contact_item_phone);
             callButton = (ImageButton) view.findViewById(R.id.contact_item_call_button);
-        }
-
-        private void disableCallButton() {
-            callButton.setEnabled(false);
-        }
-
-        private void enableCallButton() {
-            callButton.setEnabled(true);
         }
 
         @Override
@@ -66,11 +59,13 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
     }
 
     public MyContactsAdapter(ArrayList<Contact> myContacts, Context context,
-                             Fragment fragment) {
+                             boolean isEditable) {
         this.myContacts = myContacts;
         this.filteredList = myContacts;
         this.context = context;
-        this.fragment = (ContactsFragment) fragment;
+        this.isEditable = isEditable;
+
+        initializeEditDialog();
     }
 
     @Override
@@ -82,6 +77,8 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
 
     @Override
     public void onBindViewHolder(MyContactsViewHolder viewHolder, int position) {
+        editPosition = viewHolder.getAdapterPosition();
+
         final Contact contact = myContacts.get(position);
         viewHolder.nameTextView.setText(contact.getName());
         viewHolder.numberTextView.setText(contact.getPhoneNumber());
@@ -92,35 +89,23 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
                 callNumber(contact.getPhoneNumber());
             }
         });
+
+        if (isEditable) {
+            viewHolder.contactItem.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View v) {
+                    updateContact(editPosition);
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
         return myContacts.size();
     }
-
-    public ItemTouchHelper.Callback createHelperCallback() {
-        return new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView,
-                                  RecyclerView.ViewHolder viewHolder,
-                                  RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            }
-        };
-    }
-
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-
-    }
-    */
 
     public Filter getFilter() {
         return new Filter()
@@ -146,6 +131,7 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
                 return filterResults;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 filteredList = (ArrayList<Contact>) results.values;
@@ -154,39 +140,86 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
         };
     }
 
+    /*
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+    */
+
     public void addItem(Contact contact) {
         myContacts.add(contact);
         notifyItemInserted(myContacts.size());
     }
 
-    private boolean checkCallPhonePermission() {
-        if (ActivityCompat.checkSelfPermission(context,
-                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    (MainActivity) context, Manifest.permission.CALL_PHONE)) {
-                ConstraintLayout root = (ConstraintLayout)
-                        ((MainActivity) context).findViewById(R.id.contact_book_layout);
-                Snackbar.make(root, "This app needs the permission to make calls",
-                        Snackbar.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions((MainActivity) context,
-                        new String[] {Manifest.permission.CALL_PHONE},
-                        MY_PERMISSION_REQUEST_CALL_PHONE);
-            }
-        }
+    public void removeItem(int index) {
+        myContacts.remove(index);
+        notifyItemRemoved(index);
+        notifyItemRangeChanged(0, myContacts.size());
+    }
 
-        return true;
+    private void updateContact(int editPosition) {
+        editDialog.setTitle(R.string.dialog_edit_title);
+        editDialog.show();
+        nameEdit.setText(myContacts.get(editPosition).getName());
+        phoneEdit.setText(myContacts.get(editPosition).getPhoneNumber());
     }
 
     private void callNumber(String phoneNumber) {
-        //(MainActivity) context.chec
-        /*
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-            callIntent.setData(Uri.parse("tel:" + phoneNumber));
-            context.startActivity(callIntent);
-            */
     }
 
+    private void initializeEditDialog() {
+        editDialog = new AlertDialog.Builder(context);
+        Activity activity = (Activity) context;
+        View dialogView = activity.getLayoutInflater().inflate(R.layout.main_contact_dialog, null);
+        editDialog.setView(dialogView);
+
+        nameEdit = (EditText)
+                dialogView.findViewById(R.id.dialog_contacts_edit_name);
+        phoneEdit = (EditText)
+                dialogView.findViewById(R.id.dialog_contacts_edit_phone);
+
+        editDialog.setPositiveButton(R.string.dialog_positive_button,
+                new DialogInterface.OnClickListener()
+                {
+                    DatabaseOperationManager operationManager = new DatabaseOperationManager();
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int updateId = myContacts.get(editPosition).getId();
+
+                        String name = nameEdit.getText().toString();
+                        String phone = phoneEdit.getText().toString();
+                        Contact contact = new Contact(updateId, name, phone);
+                        boolean isSuccessful = operationManager.updateContact(contact);
+                        if (isSuccessful) {
+                            myContacts.set(editPosition, contact);
+                            notifyDataSetChanged();
+                            dialog.dismiss();
+                        } else {
+                            dialog.dismiss();
+                            nameEdit.setText("");
+                            phoneEdit.setText("");
+                            Toast.makeText(context, "Error updating DB", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        editDialog.setNegativeButton(R.string.dialog_negative_button,
+                new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        nameEdit.setText("");
+                        phoneEdit.setText("");
+                    }
+                });
+    }
+
+    /*
     private class ContactComparator implements Comparator<Contact>
     {
 
@@ -195,17 +228,5 @@ public class MyContactsAdapter extends RecyclerView.Adapter<MyContactsAdapter.My
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     }
-
-    private class ContactFilter extends Filter {
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            return null;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-
-        }
-    }
+    */
 }

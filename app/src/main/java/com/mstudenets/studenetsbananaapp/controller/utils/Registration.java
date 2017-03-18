@@ -1,9 +1,8 @@
-package com.mstudenets.studenetsbananaapp.controller.user;
+package com.mstudenets.studenetsbananaapp.controller.utils;
 
 
 import android.content.Context;
 
-import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.User;
 import com.mstudenets.studenetsbananaapp.view.activities.LoginActivity;
 

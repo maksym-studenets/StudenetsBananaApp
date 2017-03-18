@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.mstudenets.studenetsbananaapp.controller.database.DatabaseHelper;
-import com.mstudenets.studenetsbananaapp.tasks.CurrentWeatherService;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

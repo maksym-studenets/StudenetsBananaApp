@@ -30,9 +30,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.mstudenets.studenetsbananaapp.App;
+import com.mstudenets.studenetsbananaapp.CurrentWeatherService;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.libs.weatherlibrary.datamodel.WeatherModel;
-import com.mstudenets.studenetsbananaapp.tasks.CurrentWeatherService;
 
 import retrofit2.Call;
 import retrofit2.Callback;

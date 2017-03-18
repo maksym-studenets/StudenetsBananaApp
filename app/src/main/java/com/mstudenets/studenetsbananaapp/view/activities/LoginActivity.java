@@ -36,7 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
+import com.mstudenets.studenetsbananaapp.controller.utils.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.User;
 
 public class LoginActivity extends AppCompatActivity

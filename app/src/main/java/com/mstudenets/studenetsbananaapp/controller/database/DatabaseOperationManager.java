@@ -1,7 +1,6 @@
 package com.mstudenets.studenetsbananaapp.controller.database;
 
 
-import android.content.Context;
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -16,13 +15,26 @@ import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Class that is used as an interface to access data in a database. It is a single interface
+ * to work with the application's SQLite database. It supports {@link Contact} DAO and
+ * {@link MyMapMarker} DAO objects.
+ * This class is used to select from the database, add, delete and update records when
+ * necessary
+ */
 public class DatabaseOperationManager
 {
     private Dao<Contact, Integer> contactDao;
     private Dao<MyMapMarker, Integer> mapMarkerDao;
     private DatabaseHelper databaseHelper = App.getDatabaseHelper();
 
-    public DatabaseOperationManager(Context context) {
+    /**
+     * Public constructor of the class. Initializes DAO objects by querying
+     * {@link DatabaseHelper} object.
+     *
+     * @throws RuntimeException if {@link DatabaseHelper} throws {@link SQLException}
+     */
+    public DatabaseOperationManager() {
         try {
             contactDao = databaseHelper.getContactsDao();
             mapMarkerDao = databaseHelper.getMapMarkersDao();
@@ -34,6 +46,11 @@ public class DatabaseOperationManager
         }
     }
 
+    /**
+     * A method that is used to get specific {@link Contact} DAO object.
+     *
+     * @return contacts DAO Or null if {@link SQLException thrown}
+     */
     public Dao<Contact, Integer> getContactDao() {
         try {
             return databaseHelper.getContactsDao();
@@ -43,6 +60,11 @@ public class DatabaseOperationManager
         }
     }
 
+    /**
+     * A method that is used to get specific {@link MyMapMarker} DAO object.
+     *
+     * @return map markers DAO Or null if {@link SQLException thrown}
+     */
     public Dao<MyMapMarker, Integer> getMapMarkerDao() {
         try {
             return databaseHelper.getMapMarkersDao();

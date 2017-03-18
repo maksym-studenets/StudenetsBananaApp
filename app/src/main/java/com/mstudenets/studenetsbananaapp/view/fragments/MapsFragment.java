@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener
-
 {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 10;
     private boolean isLocationPermissionGranted;

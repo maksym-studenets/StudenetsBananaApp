@@ -1,16 +1,12 @@
 package com.mstudenets.studenetsbananaapp.view.activities;
 
-import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,10 +23,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mstudenets.studenetsbananaapp.R;
-import com.mstudenets.studenetsbananaapp.controller.database.DatabaseHelper;
-import com.mstudenets.studenetsbananaapp.controller.secure.SecurePreferences;
+import com.mstudenets.studenetsbananaapp.controller.utils.SecurePreferences;
 import com.mstudenets.studenetsbananaapp.model.Contact;
-import com.mstudenets.studenetsbananaapp.model.User;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactBookFragment;
 import com.mstudenets.studenetsbananaapp.view.fragments.ContactsFragment;
 import com.mstudenets.studenetsbananaapp.view.fragments.MapsFragment;
@@ -38,6 +32,15 @@ import com.mstudenets.studenetsbananaapp.view.fragments.WeatherFragment;
 
 import java.util.ArrayList;
 
+/**
+ * Main Activity of the application. Acts as a launcher activity.
+ * On start, checks if there is a user who is already signed in, otherwise redirects to
+ * the {@link LoginActivity}.
+ * This activity acts like a container for fragments which are used to display relevant content.
+ * By default, {@link ContactsFragment} is loaded. Fragment transitions are executed when a user
+ * selects an appropriate menu item in the navigation drawer.
+ * MainActivity provides search functionality for contacts representation.
+ */
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener
 {
@@ -48,11 +51,9 @@ public class MainActivity extends AppCompatActivity implements
     private boolean hasPermission = false;
     private String username;
 
-    private DatabaseHelper databaseHelper;
     private SecurePreferences sharedPreferences;
     private SearchView searchView;
     private FirebaseAuth firebaseAuth;
-
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements
         checkCurrentUser();
         setContentView(R.layout.activity_main);
         initializeNavbar();
-        initializeFragment();
     }
 
     @Override
@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                     @NonNull int[] grantResults) {
@@ -158,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     }
+    */
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -166,27 +168,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /*
         if (requestCode == LOGIN_ACTIVITY_DATA_REQUEST) {
             User user;
             if (resultCode == RESULT_OK)
                 user = (User) getIntent().getSerializableExtra("User");
         }
-    }
-
-    @Deprecated
-    private String checkUser() {
-        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn");
-        if (!isLoggedIn) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
-        return sharedPreferences.getString("username");
+        */
     }
 
     private void checkCurrentUser() {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        //boolean hasUsernamePref = sharedPreferences.getBoolean("username");
         boolean hasUsernamePref = sharedPreferences.containsKey("username");
         if (hasUsernamePref) username = sharedPreferences.getString("username");
         boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn") ||
@@ -194,6 +187,8 @@ public class MainActivity extends AppCompatActivity implements
         if (!isLoggedIn) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+        } else {
+            initializeFragment();
         }
     }
 
@@ -206,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     */
 
+    /*
     private void checkContactPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -220,6 +216,25 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else {
             initializeFragment();
+        }
+    }
+    */
+
+
+    private void initializeFragment() {
+        ContactsFragment contactsFragment = new ContactsFragment();
+        //checkContactPermission();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            ArrayList<Contact> phoneBookContacts =
+                    new ContactBookFragment().getPhoneBookContacts();
         }
     }
 
@@ -247,23 +262,6 @@ public class MainActivity extends AppCompatActivity implements
             name = firebaseAuth.getCurrentUser().getDisplayName();
         else name = username;
         usernameText.setText(name);
-    }
-
-    private void initializeFragment() {
-        ContactsFragment contactsFragment = new ContactsFragment();
-        //checkContactPermission();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.replace(R.id.activity_main_fragment_container, contactsFragment);
-        fragmentTransaction.commit();
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            ArrayList<Contact> phoneBookContacts =
-                    new ContactBookFragment().getPhoneBookContacts();
-        }
     }
 
     private void logout() {
