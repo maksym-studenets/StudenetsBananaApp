@@ -1,9 +1,5 @@
 package com.mstudenets.studenetsbananaapp.model;
 
-/**
- * Created by maksym on 23.02.17.
- */
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;

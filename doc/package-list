@@ -1,0 +1,10 @@
+com.mstudenets.studenetsbananaapp
+com.mstudenets.studenetsbananaapp.controller
+com.mstudenets.studenetsbananaapp.controller.database
+com.mstudenets.studenetsbananaapp.controller.maps
+com.mstudenets.studenetsbananaapp.controller.utils
+com.mstudenets.studenetsbananaapp.libs.weatherlibrary
+com.mstudenets.studenetsbananaapp.libs.weatherlibrary.datamodel
+com.mstudenets.studenetsbananaapp.model
+com.mstudenets.studenetsbananaapp.view.activities
+com.mstudenets.studenetsbananaapp.view.fragments

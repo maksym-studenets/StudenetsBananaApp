@@ -1,6 +1,6 @@
 /*
-
-  */
+    Github
+ */
 package com.mstudenets.studenetsbananaapp.controller.utils;
 
 import android.content.Context;
@@ -19,6 +19,11 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 
+/**
+ * Custom implementation of {@link SharedPreferences}. Redefines all the methods
+ * by including encryption functionality using AES transformation and SHA-256 secret
+ * key hash transformation.
+ */
 public class SecurePreferences
 {
     public static class SecurePreferencesException extends RuntimeException

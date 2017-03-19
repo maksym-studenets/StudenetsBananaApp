@@ -4,6 +4,7 @@ package com.mstudenets.studenetsbananaapp.view.fragments;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -18,7 +19,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -32,19 +36,40 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
+/**
+ * Fragment that displays contacts from the device's contact book. For these contacts
+ * only call action is available. The user is not allowed to modify or delete contact
+ * records. Requires {@code READ_CONTACTS} permission to display contacts and
+ * {@code CALL_PHONE} to make phone calls to selected contacts.
+ * Contacts list is fetched using {@link AsyncTask} to prevent blocking UI thread.
+ */
 public class ContactBookFragment extends ContactsFragment
 {
-    public static final int PERMISSION_REQUEST_READ_CONTACTS = 101;
-
+    //public static final int PERMISSION_REQUEST_READ_CONTACTS = 101;
     private boolean hasContactsPermission;
+    private boolean hasCallPhonePermission;
+    private String phoneNumber;
 
     private ArrayList<Contact> phoneBookContacts = new ArrayList<>();
+    private ArrayList<Contact> filteredContacts = new ArrayList<>();
+    private MyContactsAdapter adapter;
+    private SearchView searchView;
     private RecyclerView contactView;
 
+    /**
+     * Default constructor for the fragment. Sets {@code setHasOptionsMenu()} to true
+     * in order to display search icon on the application bar.
+     */
     public ContactBookFragment() {
         setHasOptionsMenu(true);
     }
 
+    /**
+     * Inflates fragment view and checks required permissions to fetch user's contacts.
+     * If the permission was granted, fetches contacts using {@link AsyncTask}
+     *
+     * @return view to be inflated to the fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -54,42 +79,139 @@ public class ContactBookFragment extends ContactsFragment
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             hasContactsPermission = true;
+            hasCallPhonePermission = true;
         } else {
             checkContactsPermission();
+            retrieveContacts();
         }
-        retrieveContacts();
 
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (searchView != null)
+            searchView.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Called when fragment resumes after being paused. Checks {@code READ_CONTACTS}
+     * permissions in case the user revoked it leaving the application running in the background
+     */
     @Override
     public void onResume() {
         super.onResume();
         checkContactsPermission();
     }
 
+    /**
+     * Sets search options menu and handles search query inputs. After receiving query,
+     * passes to {@link MyContactsAdapter} {@code Filter} to filter {@link RecyclerView}'s
+     * content.
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        SearchManager searchManager = (SearchManager)
+                getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.menu_search_button).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(
+                getActivity().getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.length() > 0) {
+                    newText = newText.toLowerCase();
+                    adapter.getFilter().filter(newText);
+                }
+                contactView.scrollToPosition(0);
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Returns list of device's contacts
+     *
+     * @return device phone book contacts
+     */
     public ArrayList<Contact> getPhoneBookContacts() {
         return phoneBookContacts;
     }
 
+    /**
+     * Called when the app receives a result of a permission request (on API 23 and higher).
+     * Retrieves and displays device phone book contacts if the permission is granted
+     * or displays a {@link Toast} message with details if the permission was denied
+     */
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_READ_CONTACTS) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                hasContactsPermission = true;
-                retrieveContacts();
-            } else {
-                hasContactsPermission = false;
-                Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_LONG).show();
-            }
+        switch (requestCode) {
+            case PERMISSION_REQUEST_READ_CONTACTS:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    hasContactsPermission = true;
+                    retrieveContacts();
+                } else {
+                    hasContactsPermission = false;
+                    Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case PERMISSION_REQUEST_CALL_PHONE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    hasCallPhonePermission = true;
+                    callPhone(phoneNumber);
+                } else {
+                    hasCallPhonePermission = false;
+                    Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
+    /**
+     * Checks permission to make phone calls (API 23 and higher). If permission is granted,
+     * creates an Intent to perform a phone call.
+     *
+     * @param phoneNumber contact's telephone number as obtained from the phonebook
+     *                    of from the user's input
+     * @throws SecurityException on Marshmallow and higher ig
+     */
+    @Override
+    public void callPhone(String phoneNumber) {
+        super.callPhone(phoneNumber);
+        /*
+        this.phoneNumber = phoneNumber;
+        checkCallPhonePermission();
+        if (hasCallPhonePermission) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(callIntent);
+        }
+        */
+    }
+
+    /**
+     * Creates new {@link MyContactsAdapter} adapter. Sets layout manager for contacts
+     * {@link RecyclerView}. Adds horizontal item decoration to the contacts view.
+     * Sets new {@link MyContactsAdapter} as a {@link RecyclerView} adapter.
+     */
     private void initializeRecyclerView() {
-        MyContactsAdapter adapter = new MyContactsAdapter(phoneBookContacts, getContext(), false);
+        adapter = new MyContactsAdapter(phoneBookContacts, getContext(),
+                this, false);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),
                 layoutManager.getOrientation());
@@ -98,6 +220,10 @@ public class ContactBookFragment extends ContactsFragment
         contactView.setAdapter(adapter);
     }
 
+    /**
+     * Used to request run time permission to read device phone book contacts.
+     * If the permission is granted, retrieves contact list.
+     */
     private void checkContactsPermission() {
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
@@ -117,6 +243,10 @@ public class ContactBookFragment extends ContactsFragment
         }
     }
 
+    /**
+     * Executes {@link LoadContactsTask} asynchronous task to read device phone book's contact
+     * list and initializes {@link RecyclerView} by calling {@code initializeRecyclerView()}.
+     */
     private void retrieveContacts() {
         if (hasContactsPermission) {
             LoadContactsTask loadContactsTask = new LoadContactsTask(getContext());
@@ -132,6 +262,17 @@ public class ContactBookFragment extends ContactsFragment
         }
     }
 
+    /**
+     * Asynchronous task to retrieve device phone book contacts.
+     * Displays an indefinite progress dialog in the form of a spinner and a message
+     * informing the user of the operation that is being performed.
+     * In the {@code doInBackground()} method, get contacts using {@link ContentResolver}
+     * and {@link Cursor}. Creates new {@link Contact} object of the received data
+     * and adds the objects to the {@link ArrayList<Contact>}. The {@code ArrayList}
+     * is then sorted in ascending order to maintain consistence in the content display.
+     * In the {@code onPostExecute()} method, dismisses progress dialog and populates
+     * {@link RecyclerView} with contacts
+     */
     private class LoadContactsTask extends AsyncTask<Void, Void, Void>
     {
         private Context context;
@@ -162,8 +303,8 @@ public class ContactBookFragment extends ContactsFragment
                     while (cursor.moveToNext()) {
                         String id = cursor.getString(cursor.getColumnIndex(ContactsContract
                                 .Contacts._ID));
-                        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts
-                                .DISPLAY_NAME));
+                        String name = cursor.getString(cursor.getColumnIndex(ContactsContract
+                                .Contacts.DISPLAY_NAME));
 
                         if (cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts
                                 .HAS_PHONE_NUMBER)) > 0) {
@@ -173,7 +314,8 @@ public class ContactBookFragment extends ContactsFragment
                                     new String[]{id}, null);
                             while (contactCursor.moveToNext()) {
                                 String phoneNumber = contactCursor.getString(contactCursor
-                                        .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                        .getColumnIndex(ContactsContract
+                                                .CommonDataKinds.Phone.NUMBER));
                                 contacts.add(new Contact(name, phoneNumber));
                             }
                             contactCursor.close();
@@ -197,6 +339,10 @@ public class ContactBookFragment extends ContactsFragment
             progressDialog.dismiss();
         }
 
+        /**
+         * {@link Comparator} interface implementation for {@link Contact} objects.
+         * Used for sorting contacts alphabetically in ascending order.
+         */
         private class ContactComparator implements Comparator<Contact>
         {
             @Override
@@ -205,27 +351,4 @@ public class ContactBookFragment extends ContactsFragment
             }
         }
     }
-
-    /*
-    private class SetAdapterTask extends AsyncTask<Void, Void, Void> {
-        MyContactsAdapter adapter;
-        LinearLayoutManager layoutManager;
-        DividerItemDecoration itemDecoration;
-        @Override
-        protected Void doInBackground(Void... params) {
-            adapter = new MyContactsAdapter(phoneBookContacts, getContext(), false);
-            layoutManager = new LinearLayoutManager(getContext());
-            itemDecoration = new DividerItemDecoration(getContext(),
-                    layoutManager.getOrientation());
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            contactView.addItemDecoration(itemDecoration);
-            contactView.setLayoutManager(layoutManager);
-            contactView.setAdapter(adapter);
-        }
-    }
-    */
 }
