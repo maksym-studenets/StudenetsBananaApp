@@ -98,7 +98,7 @@ public class MapsFragment extends Fragment implements
                     .position(new LatLng(myMapMarker.getLatitude(), myMapMarker.getLongitude()))
                     .title(myMapMarker.getTitle())
                     .snippet(myMapMarker.getSnippet());
-            mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setDraggable(true);
         }
 
         mMap.setOnMapClickListener(this);
@@ -184,7 +184,6 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         return false;
     }
 

@@ -172,7 +172,7 @@ public class WeatherFragment extends Fragment implements
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 checkLocation();
             } else {
-                String location = "Guadalajara";
+                String location = "";
                 sendRequest(location);
             }
         }
