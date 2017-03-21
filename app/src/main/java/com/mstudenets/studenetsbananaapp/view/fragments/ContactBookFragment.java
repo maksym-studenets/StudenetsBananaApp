@@ -81,8 +81,9 @@ public class ContactBookFragment extends ContactsFragment
             hasContactsPermission = true;
             hasCallPhonePermission = true;
         } else {
+            hasContactsPermission = false;
             checkContactsPermission();
-            retrieveContacts();
+            //retrieveContacts();
         }
 
         return view;
@@ -92,7 +93,9 @@ public class ContactBookFragment extends ContactsFragment
     public void onPause() {
         super.onPause();
         if (searchView != null)
-            searchView.setVisibility(View.INVISIBLE);
+            searchView.removeView(searchView);
+        //searchView.setVisibility(View.INVISIBLE);
+
     }
 
     /**
@@ -103,6 +106,13 @@ public class ContactBookFragment extends ContactsFragment
     public void onResume() {
         super.onResume();
         checkContactsPermission();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        //searchView.setVisibility(View.INVISIBLE);
+        searchView.removeView(searchView);
     }
 
     /**
@@ -120,6 +130,7 @@ public class ContactBookFragment extends ContactsFragment
         searchView = (SearchView) menu.findItem(R.id.menu_search_button).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 getActivity().getComponentName()));
+        searchView.setVisibility(View.INVISIBLE);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
@@ -220,22 +231,48 @@ public class ContactBookFragment extends ContactsFragment
         contactView.setAdapter(adapter);
     }
 
+
+    private void checkContactsPermissionNoReload() {
+        if (hasContactsPermission)
+            return;
+        else {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.READ_CONTACTS)) {
+                    Toast.makeText(getContext(),
+                            "We need this permission to display your contacts list",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            PERMISSION_REQUEST_READ_CONTACTS);
+                }
+            }
+        }
+    }
+
     /**
      * Used to request run time permission to read device phone book contacts.
      * If the permission is granted, retrieves contact list.
      */
     private void checkContactsPermission() {
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.READ_CONTACTS)) {
-                Toast.makeText(getContext(),
-                        "We need this permission to display your contacts list",
-                        Toast.LENGTH_LONG).show();
+        if (!hasContactsPermission) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.READ_CONTACTS)) {
+                    Toast.makeText(getContext(),
+                            "We need this permission to display your contacts list",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            PERMISSION_REQUEST_READ_CONTACTS);
+                }
             } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[] {Manifest.permission.READ_CONTACTS},
-                        PERMISSION_REQUEST_READ_CONTACTS);
+                hasContactsPermission = true;
+                retrieveContacts();
             }
         } else {
             hasContactsPermission = true;

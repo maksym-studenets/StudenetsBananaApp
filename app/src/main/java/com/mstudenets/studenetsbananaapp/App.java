@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class App extends Application
 {
     public static String APIXU_KEY = "263e72f2594a4a5b8be123552171402";
-    public static String APIXU_CURRENT_URL = "https://api.apixu.com";
+    public static String APIXU_CURRENT_URL = "http://api.apixu.com";
 
     private static DatabaseHelper databaseHelper;
     private static CurrentWeatherService currentWeatherService;

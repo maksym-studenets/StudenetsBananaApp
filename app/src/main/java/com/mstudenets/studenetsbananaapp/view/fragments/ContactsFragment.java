@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -45,7 +46,7 @@ public class ContactsFragment extends Fragment implements PhoneCaller
         view = root;
 
         initializeTabs();
-        checkContactsPermission();
+        //checkContactsPermission();
 
         return root;
     }
@@ -67,29 +68,57 @@ public class ContactsFragment extends Fragment implements PhoneCaller
             }
         } catch (SecurityException e) {
             e.printStackTrace();
+            Toast.makeText(getContext(), "Permission was not granted",
+                    Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", getActivity().getPackageName(), null));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(intent);
         }
     }
 
     public void checkCallPhonePermission() {
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.CALL_PHONE)) {
-                Toast.makeText(getContext(), "We need this permissions to make calls from the app",
-                        Toast.LENGTH_LONG).show();
+        if (!hasCallPermission) {
+            if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                    Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.CALL_PHONE)) {
+                    Toast.makeText(getContext(), "We need this permissions to make calls from the app",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            PERMISSION_REQUEST_CALL_PHONE);
+                }
             } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.CALL_PHONE},
-                        PERMISSION_REQUEST_CALL_PHONE);
+                hasCallPermission = true;
+                //callPhone(phoneNumber);
             }
-        } else {
-            hasCallPermission = true;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CALL_PHONE:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    hasCallPermission = true;
+                    callPhone(phoneNumber);
+                } else {
+                    hasCallPermission = false;
+                    Toast.makeText(getContext(), "Permission was denied",
+                            Toast.LENGTH_SHORT).show();
+                    adapter.setCallButtonEnabled(hasCallPermission);
+                }
+                break;
+            case PERMISSION_REQUEST_READ_CONTACTS:
+                break;
+            default:
+                break;
+        }
+        /*
         if (requestCode == PERMISSION_REQUEST_CALL_PHONE) {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -102,6 +131,7 @@ public class ContactsFragment extends Fragment implements PhoneCaller
                 adapter.setCallButtonEnabled(hasCallPermission);
             }
         }
+        */
     }
 
     private void checkContactsPermission() {
@@ -117,8 +147,6 @@ public class ContactsFragment extends Fragment implements PhoneCaller
                         new String[]{Manifest.permission.READ_CONTACTS},
                         PERMISSION_REQUEST_READ_CONTACTS);
             }
-        } else {
-            callPhone("");
         }
     }
 

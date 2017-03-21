@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -234,6 +235,12 @@ public class MyContactsAdapter extends
             }
         } catch (SecurityException e) {
             e.printStackTrace();
+            Toast.makeText(context, "Permission was not granted", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", context.getPackageName(), null));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
         } catch (NullPointerException e) {
             Toast.makeText(context, "Error performing call", Toast.LENGTH_SHORT).show();
         }

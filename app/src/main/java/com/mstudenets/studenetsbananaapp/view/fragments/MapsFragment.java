@@ -2,18 +2,22 @@ package com.mstudenets.studenetsbananaapp.view.fragments;
 
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -24,25 +28,32 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mstudenets.studenetsbananaapp.R;
+import com.mstudenets.studenetsbananaapp.controller.database.DatabaseOperationManager;
+import com.mstudenets.studenetsbananaapp.model.MapsPermissionUtils;
 import com.mstudenets.studenetsbananaapp.model.MyMapMarker;
 
 import java.util.ArrayList;
 
 
 public class MapsFragment extends Fragment implements
-        OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener
+        OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener, GoogleMap.OnInfoWindowLongClickListener
 {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 10;
     private boolean isLocationPermissionGranted;
     private boolean isEdit = false;
 
-    private AlertDialog.Builder alertDialog;
+    private AlertDialog.Builder markerDialog;
     private ArrayList<MyMapMarker> mapMarkers = new ArrayList<>();
-    //private ArrayList<MarkerOptions> mMarkerOptions = new ArrayList<>();
-    //private MarkersOperationManager operationManager;
+    private EditText titleEdit, snippetEdit;
+    private DatabaseOperationManager operationManager;
 
-    private MapView mapView;
     private GoogleMap mMap;
+    private LatLng currentMarkerPosition;
+    private MapView mapView;
+    private Marker marker;
+    private View view;
 
     public MapsFragment() {
     }
@@ -51,6 +62,11 @@ public class MapsFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        isLocationPermissionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
+
+        operationManager = new DatabaseOperationManager();
+        operationManager.getMapMarkerDao();
+        mapMarkers = operationManager.selectMarkersFromDatabase();
 
         mapView = (MapView) view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -60,111 +76,92 @@ public class MapsFragment extends Fragment implements
             MapsInitializer.initialize(getContext());
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "Maps init error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error while initializing map",
+                    Toast.LENGTH_SHORT).show();
         }
         mapView.getMapAsync(this);
-
         return view;
     }
 
     @Override
-    public void onMapReady(final GoogleMap map) {
+    public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnMyLocationButtonClickListener(this);
+
+        initializeDialog();
+        zoomToCity();
+        enableMyLocation();
         enableMapControls();
 
-        LatLng city = new LatLng(48.291, 25.935);
-        mMap.addMarker(new MarkerOptions().position(city).title("Chernivtsi"))
-                .setDraggable(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(city));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2500, null);
-        mMap.setOnMyLocationButtonClickListener(this);
-        enableMyLocation();
+        for (MyMapMarker myMapMarker : mapMarkers) {
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(new LatLng(myMapMarker.getLatitude(), myMapMarker.getLongitude()))
+                    .title(myMapMarker.getTitle())
+                    .snippet(myMapMarker.getSnippet());
+            mMap.addMarker(markerOptions);
+        }
 
+        mMap.setOnMapClickListener(this);
+        mMap.setOnMapLongClickListener(this);
+        mMap.setOnInfoWindowLongClickListener(this);
+    }
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
-        {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("My marker");
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.addMarker(markerOptions);
+    @Override
+    public void onMapClick(LatLng latLng) {
+        marker = null;
+    }
 
-                MyMapMarker mapMarker = new MyMapMarker(latLng.latitude, latLng.longitude,
-                        markerOptions.getTitle(), "");
-                mapMarkers.add(mapMarker);
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        isEdit = false;
+        currentMarkerPosition = latLng;
+        removeView();
+        markerDialog.show();
+    }
+
+    @Override
+    public void onInfoWindowLongClick(Marker marker) {
+        this.marker = marker;
+        isEdit = true;
+        removeView();
+        markerDialog.show();
+    }
+
+    private void enableMyLocation() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                MapsPermissionUtils.requestPermission((AppCompatActivity) getActivity(),
+                        LOCATION_PERMISSION_REQUEST_CODE,
+                        Manifest.permission.ACCESS_FINE_LOCATION, false);
+            } else if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
             }
-        });
-
-        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
-        {
-            @Override
-            public void onMarkerDragStart(Marker marker) {
-            }
-
-            @Override
-            public void onMarkerDrag(Marker marker) {
-            }
-
-            @Override
-            public void onMarkerDragEnd(Marker marker) {
-                LatLng latLng = marker.getPosition();
-                for (int i = 0; i < mapMarkers.size(); i++) {
-                    if (mapMarkers.get(i).getLatitude() == latLng.latitude &&
-                            mapMarkers.get(i).getLongitude() == latLng.longitude) {
-                        mapMarkers.get(i).setLatitude(latLng.latitude);
-                        mapMarkers.get(i).setLongitude(latLng.longitude);
-
-                        //operationManager.updateRow(mapMarkers.get(i));
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
+        } else {
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0) {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    updateUi(isLocationPermissionGranted);
-                } else {
-                    Toast.makeText(getContext(), "Cannot show your current location",
-                            Toast.LENGTH_LONG).show();
-                }
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE)
+            return;
+
+        try {
+            if (MapsPermissionUtils.isPermissionGranted(permissions, grantResults,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                mMap.setMyLocationEnabled(true);
+                enableMapControls();
+            } else {
+                isLocationPermissionGranted = false;
+                enableMapControls();
             }
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
     }
 
@@ -172,52 +169,112 @@ public class MapsFragment extends Fragment implements
         UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);
-        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(isLocationPermissionGranted);
+        uiSettings.setCompassEnabled(true);
         uiSettings.setScrollGesturesEnabled(true);
         uiSettings.setTiltGesturesEnabled(true);
         uiSettings.setMapToolbarEnabled(true);
     }
 
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(getContext(), "We need location permission to personalize the map",
-                        Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        } else if (mMap != null) {
-            mMap.setMyLocationEnabled(true);
-        }
+    private void zoomToCity() {
+        LatLng chernivtsi = new LatLng(48.292568, 25.935139);
+        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(chernivtsi, 13);
+        mMap.animateCamera(location);
     }
 
-    private void updateUi(boolean isLocationPermissionGranted) {
-        try {
-            if (isLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            }
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        return false;
     }
 
-    private void addMarkers() {
-        if (mapMarkers != null) {
-            for (MyMapMarker myMapMarker : mapMarkers) {
-                mMap.addMarker(new MarkerOptions().position(new LatLng(myMapMarker.getLatitude(),
-                        myMapMarker.getLongitude())).title("")).setDraggable(false);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(myMapMarker.getLatitude(),
-                        myMapMarker.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 1500, null);
-            }
-        }
+    private void removeView() {
+        if (view.getParent() != null)
+            ((ViewGroup) view.getParent()).removeView(view);
     }
+
+    private void initializeDialog() {
+        markerDialog = new AlertDialog.Builder(getContext());
+        view = getActivity().getLayoutInflater().inflate(R.layout.fragment_maps_dialog, null);
+        markerDialog.setView(view);
+
+        titleEdit = (EditText) view.findViewById(R.id.fragment_maps_dialog_edit_title);
+        snippetEdit = (EditText) view.findViewById(R.id.fragment_maps_dialog_edit_snippet);
+
+        markerDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!isEdit) {
+                    String title = titleEdit.getText().toString();
+                    String snippet = snippetEdit.getText().toString();
+
+                    MyMapMarker myMapMarker = new MyMapMarker(currentMarkerPosition.latitude,
+                            currentMarkerPosition.longitude, title, snippet);
+
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(currentMarkerPosition)
+                            .title(title).snippet(snippet);
+                    marker = mMap.addMarker(markerOptions);
+                    boolean isSuccessful = operationManager.addMarker(myMapMarker);
+                    if (isSuccessful) {
+                        mMap.addMarker(markerOptions);
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Marker add failed",
+                                Toast.LENGTH_SHORT).show();
+                        marker.remove();
+                        dialog.dismiss();
+                    }
+                    titleEdit.setText("");
+                    snippetEdit.setText("");
+                } else {
+                    titleEdit.setText(marker.getTitle());
+                    snippetEdit.setText(marker.getTitle());
+
+                    String title = titleEdit.getText().toString();
+                    String snippet = snippetEdit.getText().toString();
+
+                    boolean isSucessful = operationManager.updateMarker(title, snippet);
+                    if (isSucessful) {
+                        MyMapMarker myMapMarker = operationManager.getMapMarker(title, snippet);
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(myMapMarker.getLatitude(),
+                                        myMapMarker.getLongitude()))
+                                .title(myMapMarker.getTitle())
+                                .snippet(myMapMarker.getSnippet());
+                        mMap.addMarker(markerOptions);
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(getContext(), "Error updating marker",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    titleEdit.setText("");
+                    snippetEdit.setText("");
+                }
+            }
+        });
+
+        markerDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                titleEdit.setText("");
+                snippetEdit.setText("");
+                dialog.dismiss();
+            }
+        });
+    }
+
 }
+
+
+
+        /*
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.
+                findViewById(R.id.fragment_maps_coordinatorLayout);
+        NestedScrollView bottomSheet = (NestedScrollView) coordinatorLayout
+                .findViewById(R.id.fragment_maps_bottom_sheet);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        */

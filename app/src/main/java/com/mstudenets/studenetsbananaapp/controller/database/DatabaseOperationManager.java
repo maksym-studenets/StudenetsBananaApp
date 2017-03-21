@@ -102,6 +102,18 @@ public class DatabaseOperationManager
         }
     }
 
+    public MyMapMarker getMapMarker(String title, String snippet) {
+        try {
+            QueryBuilder<MyMapMarker, Integer> queryBuilder = mapMarkerDao.queryBuilder();
+            queryBuilder.where().eq("title", title).and().eq("snippet", snippet);
+            PreparedQuery<MyMapMarker> preparedQuery = queryBuilder.prepare();
+            return mapMarkerDao.query(preparedQuery).get(0);
+        } catch (SQLException e) {
+            Log.e(DatabaseOperationManager.class.getName(), " --- error getting marker");
+            return null;
+        }
+    }
+
     public boolean addContact(Contact contact) {
         try {
             contactDao.create(contact);
@@ -183,6 +195,24 @@ public class DatabaseOperationManager
         }
     }
 
+    public boolean updateMarker(String title, String snippet) {
+        try {
+            UpdateBuilder<MyMapMarker, Integer> updateBuilder = mapMarkerDao.updateBuilder();
+            updateBuilder.where().eq("title", title).and().eq("snippet", snippet);
+            updateBuilder.updateColumnValue("title", title);
+            updateBuilder.updateColumnValue("snippet", snippet);
+            updateBuilder.update();
+            Log.i(DatabaseOperationManager.class.getName(),
+                    " --- successfully updated marker ");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.e(DatabaseOperationManager.class.getName(),
+                    " --- error updating marker ");
+            return false;
+        }
+    }
+
     public boolean updateMarker(MyMapMarker mapMarker) {
         try {
             int id = mapMarker.getId();
@@ -191,7 +221,7 @@ public class DatabaseOperationManager
             updateBuilder.updateColumnValue("latitude", mapMarker.getLatitude());
             updateBuilder.updateColumnValue("longitude", mapMarker.getLongitude());
             updateBuilder.updateColumnValue("title", mapMarker.getTitle());
-            updateBuilder.updateColumnValue("description", mapMarker.getDescription());
+            updateBuilder.updateColumnValue("description", mapMarker.getSnippet());
             updateBuilder.update();
             Log.i(DatabaseOperationManager.class.getName(),
                     " --- successfully updated marker ");

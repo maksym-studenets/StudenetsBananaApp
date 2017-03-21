@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements
         initializeNavbar();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     /**
      * Adds search menu to the application bar and fetches search request
      *
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
                 .getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        //searchView.setVisibility(View.INVISIBLE);
+        searchView.removeView(searchView);
         return true;
     }
 
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentTransaction.replace(R.id.activity_main_fragment_container,
                         weatherFragment);
                 fragmentTransaction.commit();
-                //searchView.setVisibility(View.INVISIBLE);
+                searchView.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_maps:
                 MapsFragment mapsFragment = new MapsFragment();
@@ -137,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentTransaction.replace(R.id.activity_main_fragment_container,
                         mapsFragment);
                 fragmentTransaction.commit();
-                //searchView.setVisibility(View.INVISIBLE);
+                searchView.setVisibility(View.INVISIBLE);
                 break;
             case R.id.nav_logout:
                 logout();

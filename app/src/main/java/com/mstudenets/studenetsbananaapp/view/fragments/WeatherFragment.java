@@ -33,6 +33,7 @@ import com.mstudenets.studenetsbananaapp.App;
 import com.mstudenets.studenetsbananaapp.CurrentWeatherService;
 import com.mstudenets.studenetsbananaapp.R;
 import com.mstudenets.studenetsbananaapp.libs.weatherlibrary.datamodel.WeatherModel;
+import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -239,7 +240,14 @@ public class WeatherFragment extends Fragment implements
                                 model.getLocation().getCountry();
                         double temperature = model.getCurrent().getTempC();
                         double feelsLike = model.getCurrent().getFeelslikeC();
-                        //String conditionCode = model.getCurrent().getCondition().getText();
+                        String conditionCode = model.getCurrent().getCondition().getText();
+                        if (conditionCode == null) conditionCode = "";
+                        String iconUrl;
+                        if (conditionCode.equals(""))
+                            iconUrl = "https://image.freepik.com/free-icon/" +
+                                    "warning-triangular-signal_318-30570.jpg";
+                        else iconUrl = "";
+
                         //String icon = model.getCurrent().getCondition().getIcon();
                         //String iconUrl = icon.substring(2);
                         checkTemperature(temperature);
@@ -248,7 +256,7 @@ public class WeatherFragment extends Fragment implements
                         regionText.setText(region);
                         tempText.setText(String.valueOf(temperature));
                         feelsLikeText.setText("Feels like: " + String.valueOf(feelsLike));
-                        //Picasso.with(getContext()).load(iconUrl).into(imageView);
+                        Picasso.with(getContext()).load(iconUrl).fit().into(imageView);
                         showWidgets();
                     }
 

@@ -87,6 +87,12 @@ public class MyContactsFragment extends ContactsFragment
         return view;
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        searchView.setVisibility(View.INVISIBLE);
+    }
+
     /**
      * Adds search functionality to the fragment
      *

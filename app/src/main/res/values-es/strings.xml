@@ -44,4 +44,6 @@
     <string name="permission_required_toast">Autoriza permisión de ubicación por favor</string>
     <string name="search_hint">Buscar...</string>
     <string name="search_title">Busqueda</string>
+    <string name="contacts_context_menu_delete">Borrar</string>
+    <string name="contacts_context_menu_edit">Editar</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.mstudenets.studenetsbananaapp.model;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -21,20 +20,19 @@ public class MyMapMarker
     @DatabaseField(columnName = "title", dataType = DataType.STRING)
     private String title;
 
-    @DatabaseField(columnName = "description", dataType = DataType.STRING)
-    private String description;
+    @DatabaseField(columnName = "snippet", dataType = DataType.STRING)
+    private String snippet;
 
-    private BitmapDescriptorFactory color;
 
     public MyMapMarker() {
     }
 
     public MyMapMarker(double latitude, double longitude,
-                       String title, String description) {
+                       String title, String snippet) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.title = title;
-        this.description = description;
+        this.snippet = snippet;
     }
 
     public int getId() {
@@ -69,11 +67,11 @@ public class MyMapMarker
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSnippet() {
+        return snippet;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSnippet(String snippet) {
+        this.snippet = snippet;
     }
 }

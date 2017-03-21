@@ -21,7 +21,7 @@
     <string name="title_activity_main_no_navbar">Welcome</string>
     <string name="toast_not_all_fields">Fill in all the fields</string>
     <string name="navbar_icon_description">Logo</string>
-    <string name="drawer_image_description">Background description</string>
+    <string name="drawer_image_description">Background snippet</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_my_contacts">My contacts</string>
     <string name="navigation_drawer_close">Close</string>
@@ -44,4 +44,6 @@
     <string name="permission_required_toast">Please grant location permission</string>
     <string name="search_hint">Search...</string>
     <string name="search_title">Search</string>
+    <string name="contacts_context_menu_delete">Delete</string>
+    <string name="contacts_context_menu_edit">Edit</string>
 </resources>

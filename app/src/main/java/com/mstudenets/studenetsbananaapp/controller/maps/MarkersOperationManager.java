@@ -97,7 +97,7 @@ public class MarkersOperationManager
             updateBuilder.updateColumnValue("latitude", myMapMarker.getLatitude());
             updateBuilder.updateColumnValue("longitude", myMapMarker.getLongitude());
             updateBuilder.updateColumnValue("title", myMapMarker.getTitle());
-            updateBuilder.updateColumnValue("description", myMapMarker.getDescription());
+            updateBuilder.updateColumnValue("description", myMapMarker.getSnippet());
             updateBuilder.update();
             Log.i(MarkersOperationManager.class.getName(),
                     " --- successfully updated record ");

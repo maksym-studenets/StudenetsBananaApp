@@ -28,6 +28,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -179,21 +180,6 @@ public class LoginActivity extends AppCompatActivity
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    /*
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_READ_CONTACTS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                hasPermission = true;
-            } else {
-                hasPermission = false;
-                Toast.makeText(this, "Contacts permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-    */
-
     private void loginApp() {
         String username, password;
 
@@ -274,6 +260,7 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, " --- signInWithCredential:onComplete:" + task.isSuccessful());
+                        Log.i(TAG, " -- Facebook Sign In Successful");
 
                         if (!task.isSuccessful()) {
                             Log.w(TAG, " --- signInWithCredential", task.getException());
@@ -282,6 +269,14 @@ public class LoginActivity extends AppCompatActivity
                         } else {
                             updateUi(true);
                         }
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar.make(rootView, "Firebase authentication error. Facebook OK",
+                                Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
