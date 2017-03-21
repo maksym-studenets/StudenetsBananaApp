@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private SecurePreferences sharedPreferences;
     private SearchView searchView;
+    private Toolbar toolbar;
     private FirebaseAuth firebaseAuth;
 
     /**
@@ -156,22 +157,8 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    /*
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-    */
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /*
-        if (requestCode == LOGIN_ACTIVITY_DATA_REQUEST) {
-            User user;
-            if (resultCode == RESULT_OK)
-                user = (User) getIntent().getSerializableExtra("User");
-        }
-        */
+    public Toolbar getToolbar() {
+        return toolbar;
     }
 
     private void checkCurrentUser() {
@@ -198,18 +185,8 @@ public class MainActivity extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
-    /*
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            ArrayList<Contact> phoneBookContacts =
-                    new ContactBookFragment().getPhoneBookContacts();
-        }
-    }
-    */
-
     private void initializeNavbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

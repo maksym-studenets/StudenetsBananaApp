@@ -111,8 +111,7 @@ public class ContactBookFragment extends ContactsFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        //searchView.setVisibility(View.INVISIBLE);
-        searchView.removeView(searchView);
+        searchView.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -204,15 +203,6 @@ public class ContactBookFragment extends ContactsFragment
     @Override
     public void callPhone(String phoneNumber) {
         super.callPhone(phoneNumber);
-        /*
-        this.phoneNumber = phoneNumber;
-        checkCallPhonePermission();
-        if (hasCallPhonePermission) {
-            Intent callIntent = new Intent(Intent.ACTION_CALL);
-            callIntent.setData(Uri.parse("tel:" + phoneNumber));
-            startActivity(callIntent);
-        }
-        */
     }
 
     /**
